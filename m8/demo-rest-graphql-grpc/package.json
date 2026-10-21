@@ -9,6 +9,9 @@
     "payloads": "node scripts/payload-sizes.mjs",
     "codec": "node scripts/codec-cost.mjs",
     "network": "node scripts/network-bench.mjs",
+    "stream": "node scripts/stream-bench.mjs",
+    "tls": "node scripts/tls-bench.mjs",
+    "java": "node scripts/java-bench.mjs",
     "gateway": "node dist/gateway.js",
     "bench": "node scripts/bench.mjs"
   },

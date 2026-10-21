@@ -5,6 +5,7 @@ package students;
 service StudentService {
   rpc GetStudent (GetStudentRequest) returns (Student);
   rpc ListStudents (ListStudentsRequest) returns (ListStudentsReply);
+  rpc StreamStudents (ListStudentsRequest) returns (stream Student);
 }
 
 message Course {

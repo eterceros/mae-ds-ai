@@ -29,8 +29,10 @@ La base de datos es **simulada** (memoria, con 1 ms por consulta y un máximo de
 ## Requisitos
 
 - Node.js 22 o superior (probado con 24.19).
-- Docker, solo para `npm run network` (imágenes `node:22-alpine` y `nicolaka/netshoot`).
-- k6 **no** hace falta: las mediciones usan un cliente Node igual para los tres estilos. El cliente gRPC de k6 hace más trabajo que su cliente HTTP y falsea la comparación (ver `GUION.md`, sección 7).
+- Docker, solo para `npm run network` y `npm run stream` (imágenes `node:22-alpine` y `nicolaka/netshoot`).
+- Java 25 o superior y Maven 3.9, solo para `npm run java` (probado con Java 26 y Maven 3.9.16).
+- `openssl`, solo para `npm run tls` (en Windows viene con Git).
+- k6 **no** hace falta: las mediciones usan un cliente Node igual para los tres estilos. El cliente gRPC de k6 hace más trabajo que su cliente HTTP y falsea la comparación (ver `GUION.md`, sección 10).
 
 ## Cómo correrlo
 
@@ -42,6 +44,9 @@ npm run payloads          # bytes, peticiones y consultas a la base por escenari
 npm run codec             # costo de serializar/decodificar JSON y protobuf (solo CPU)
 npm run bench             # capacidad y latencia por escenario (levanta su propio servicio y gateway en otros puertos)
 npm run network           # lo mismo con red limitada (Docker + tc netem)
+npm run stream            # streaming: cuándo llega el primer elemento (Docker)
+npm run tls               # costo de TLS y de abrir una conexión nueva por llamada
+(cd java-server && mvn -q package -DskipTests) && npm run java   # el mismo servicio en Java (Spring Boot + grpc-java)
 ```
 
 El paso a paso con lo que se muestra en clase, la salida esperada y las conclusiones está en [`GUION.md`](GUION.md).
@@ -54,7 +59,10 @@ Medidos el 21 de octubre de 2026 en un portátil (Intel Core i9-12900H, 20 hilos
 - [`results/LATENCY.md`](results/LATENCY.md): máximo de llamadas por segundo y latencia p50/p95/p99, incluidos los escenarios servicio a servicio.
 - [`results/CODEC.md`](results/CODEC.md): costo de codificar y decodificar en Node, solo CPU.
 - [`results/NETWORK.md`](results/NETWORK.md): los mismos escenarios con 20 ms de retardo y 20 Mbit/s.
+- [`results/JAVA.md`](results/JAVA.md): REST contra gRPC en un servidor compilado (Spring Boot 4.1 y grpc-java 1.83).
+- [`results/STREAM.md`](results/STREAM.md): cuándo llega el primer elemento con *streaming* y cuándo llegan todos.
+- [`results/TLS.md`](results/TLS.md): costo de TLS y de abrir una conexión nueva en cada llamada.
 
-**Úsenlos como orden de magnitud, no como verdad.** Cada cifra es la mediana de 3 rondas; entre rondas el orden entre estilos se mantuvo. Todo con servidor Node y cliente Node en una sola máquina (en la prueba de red, el servidor va en un contenedor). Con otro lenguaje en el servidor, con una red real o con TLS, los números cambian, y es posible que el orden también.
+**Úsenlos como orden de magnitud, no como verdad.** Cada cifra es la mediana de 3 rondas; en algunos escenarios los rangos entre rondas se solapan (se indica en `GUION.md`). Casi todo con servidor Node y cliente Node en una sola máquina (en las pruebas de red y de *streaming*, el servidor va en un contenedor; en `JAVA.md`, el servidor es Java). No se pueden comparar cifras de Java con cifras de Node: son servidores distintos. Con una red real entre máquinas, los números cambian, y es posible que el orden también.
 
-**Una advertencia sobre la propia medición:** la primera versión de esta demo daba resultados que contradecían la teoría (gRPC más lento que REST, GraphQL hasta 15 veces más lento). Eran errores del experimento, no de la teoría; `GUION.md` (sección 7) cuenta cuáles fueron.
+**Una advertencia sobre la propia medición:** la primera versión de esta demo daba resultados que contradecían la teoría (gRPC más lento que REST, GraphQL hasta 15 veces más lento). Eran errores del experimento, no de la teoría; `GUION.md` (sección 10) cuenta cuáles fueron.

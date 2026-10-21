@@ -2,3 +2,5 @@ node_modules/
 dist/
 results/.k6-*.json
 *.log
+scripts/tls/certs/
+java-server/target/

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Spring Boot 4.1.1 tambien fija las versiones de grpc-java (1.83.1), protobuf-java (4.35.1),
+       Jackson (3.x) y Tomcat; se usan esas. -->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.1</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>umss.m8</groupId>
+  <artifactId>students-java-server</artifactId>
+  <version>1.0.0</version>
+  <name>students-java-server</name>
+  <description>Servicio de estudiantes (REST + gRPC) en Java para comparar con la version Node.</description>
+
+  <properties>
+    <!-- Se compila para Java 25 (LTS) y se ejecuta con el JDK instalado (26). -->
+    <java.version>25</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>students-java-server</finalName>
+    <!-- os-maven-plugin detecta el sistema (os.detected.classifier) para elegir el protoc correcto. -->
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.7.1</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <!-- Genera el codigo Java del MISMO proto que usa Node (../proto/students.proto).
+           protoc y protoc-gen-grpc-java se descargan como artefactos de Maven: no hay que instalar nada.
+           Se usa org.xolstice y no io.github.ascopes (el que sugiere Spring Boot) porque este ultimo copia protoc
+           a una ruta muy larga dentro de target/ y Windows no puede ejecutarlo si la carpeta del proyecto ya es
+           larga (limite de 260 caracteres de CreateProcess). Por lo mismo, los plugins van a target/p. -->
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
+        <configuration>
+          <protoSourceRoot>${project.basedir}/../proto</protoSourceRoot>
+          <protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc-java.version}:exe:${os.detected.classifier}</pluginArtifact>
+          <protocPluginDirectory>${project.build.directory}/p</protocPluginDirectory>
+          <pluginParameter>@generated=omit</pluginParameter>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>compile-custom</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

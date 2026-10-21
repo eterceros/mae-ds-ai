@@ -42,6 +42,33 @@ export function createClients({ root, httpPort, grpcPort, gatewayPort, maxSocket
     grpc: (method, message) =>
       new Promise((resolve, reject) => grpcClient[method](message, (err, reply) => (err ? reject(err) : resolve(reply)))),
     gateway: (path) => request(gatewayPort, path),
+    // Streaming: llama onItem con cada elemento en cuanto llega y resuelve al terminar.
+    restStream: (path, onItem) =>
+      new Promise((resolve, reject) => {
+        http
+          .get({ host: '127.0.0.1', port: httpPort, path, agent }, (res) => {
+            if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}`));
+            let pending = '';
+            res.setEncoding('utf8');
+            res.on('data', (text) => {
+              pending += text;
+              let newline;
+              while ((newline = pending.indexOf('\n')) >= 0) {
+                onItem(JSON.parse(pending.slice(0, newline)));
+                pending = pending.slice(newline + 1);
+              }
+            });
+            res.on('end', resolve);
+          })
+          .on('error', reject);
+      }),
+    grpcStream: (method, message, onItem) =>
+      new Promise((resolve, reject) => {
+        const call = grpcClient[method](message);
+        call.on('data', onItem);
+        call.on('end', resolve);
+        call.on('error', reject);
+      }),
     close() {
       agent.destroy();
       grpcClient.close();

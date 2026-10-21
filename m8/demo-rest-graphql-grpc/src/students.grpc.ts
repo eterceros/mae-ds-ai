@@ -1,7 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
-import { DataService } from './data.service';
+import { from, mergeMap, Observable } from 'rxjs';
+import { DataService, Student } from './data.service';
 
 @Controller()
 export class StudentsGrpcController {
@@ -20,5 +21,12 @@ export class StudentsGrpcController {
     if (!withCourses) return { students };
     const courses = await this.data.coursesOfMany(students.map((s) => s.id));
     return { students: students.map((s, i) => ({ ...s, courses: courses[i] })) };
+  }
+
+  // Streaming de servidor: un mensaje por estudiante, el cliente puede empezar a procesar el primero
+  // sin esperar a los demas. Nest convierte el Observable en una respuesta en flujo.
+  @GrpcMethod('StudentService', 'StreamStudents')
+  streamStudents({ limit }: { limit: number }): Observable<Student> {
+    return from(this.data.listStudents(limit)).pipe(mergeMap((students) => from(students)));
   }
 }
