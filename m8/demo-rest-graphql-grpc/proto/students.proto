@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package students;
+
+service StudentService {
+  rpc GetStudent (GetStudentRequest) returns (Student);
+  rpc ListStudents (ListStudentsRequest) returns (ListStudentsReply);
+}
+
+message Course {
+  string code = 1;
+  string title = 2;
+}
+
+message Student {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  string career = 4;
+  repeated Course courses = 5;
+}
+
+message GetStudentRequest {
+  int32 id = 1;
+}
+
+message ListStudentsRequest {
+  int32 limit = 1;
+  bool with_courses = 2;
+}
+
+message ListStudentsReply {
+  repeated Student students = 1;
+}

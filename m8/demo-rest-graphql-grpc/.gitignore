@@ -1,0 +1,4 @@
+node_modules/
+dist/
+results/.k6-*.json
+*.log

@@ -1,0 +1,20 @@
+type Course {
+  code: String!
+  title: String!
+}
+
+type Student {
+  id: Int!
+  name: String!
+  email: String!
+  career: String!
+  "Cursos del estudiante, cargados con dataloader: una consulta para todos los estudiantes de la peticion."
+  courses: [Course!]!
+  "Mismos cursos, pero con una consulta por estudiante (el patron N+1 a proposito, para compararlo)."
+  coursesNaive: [Course!]!
+}
+
+type Query {
+  student(id: Int!): Student
+  students(limit: Int = 100): [Student!]!
+}
