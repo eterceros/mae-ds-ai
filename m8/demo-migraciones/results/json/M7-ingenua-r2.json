@@ -1,0 +1,79 @@
+{
+  "escenario": "M7",
+  "variante": "ingenua",
+  "ronda": 2,
+  "nombreVariante": "ingenua",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 83410.51009999984,
+  "pasos": [
+    {
+      "nombre": "Columna nueva",
+      "sql": "ALTER TABLE pedidos ADD COLUMN region_codigo smallint",
+      "ms": 4.217200000071898,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Rellenar en un UPDATE",
+      "sql": "UPDATE pedidos SET region_codigo = CASE region WHEN 'andina' THEN 1 WHEN 'valles' THEN 2 WHEN 'llanos' THEN 3 END",
+      "ms": 83397.15639999998,
+      "sonda": {
+        "pedidos": "RowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "RowExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 3.0350999999791384,
+    "p99": 11.302300000097603,
+    "max": 29.932999999960884,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 16682,
+    "p50": 36149.91830000002,
+    "p99": 74830.22889999999,
+    "max": 82486.95940000005,
+    "bloqueadas": 15124,
+    "bloqueadasLectura": 10526,
+    "bloqueadasEscritura": 4598,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 17283,
+    "p50": 34718.68940000003,
+    "p99": 74801.4608,
+    "max": 82486.95940000005,
+    "bloqueadas": 15725,
+    "bloqueadasLectura": 10948,
+    "bloqueadasEscritura": 4777,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:53:20.855Z"
+}

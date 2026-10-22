@@ -1,0 +1,65 @@
+{
+  "escenario": "M2",
+  "variante": "ingenua",
+  "ronda": 1,
+  "nombreVariante": "volátil (ingenua)",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 13214.7581,
+  "pasos": [
+    {
+      "nombre": "DEFAULT volátil",
+      "sql": "ALTER TABLE pedidos ADD COLUMN token uuid NOT NULL DEFAULT gen_random_uuid()",
+      "ms": 13204.822699999997,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "AccessExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 20,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 2.106899999998859,
+    "p99": 39.52930000000197,
+    "max": 117.30739999999787,
+    "bloqueadas": 5,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 5,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 2643,
+    "p50": 6804.0838,
+    "p99": 13002.524800000007,
+    "max": 13124.894600000007,
+    "bloqueadas": 2642,
+    "bloqueadasLectura": 1836,
+    "bloqueadasEscritura": 806,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 3243,
+    "p50": 5361.8431000000055,
+    "p99": 12972.6999,
+    "max": 13124.894600000007,
+    "bloqueadas": 2702,
+    "bloqueadasLectura": 1879,
+    "bloqueadasEscritura": 823,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 20,
+  "error": null,
+  "fecha": "2026-10-22T16:32:45.574Z"
+}

@@ -1,0 +1,82 @@
+{
+  "escenario": "M6",
+  "variante": "segura",
+  "ronda": 1,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 638.3377999999793,
+  "pasos": [
+    {
+      "nombre": "FK sin validar",
+      "sql": "ALTER TABLE pedidos ADD CONSTRAINT pedidos_cliente_fk FOREIGN KEY (cliente_id) REFERENCES clientes (id) NOT VALID",
+      "ms": 2.423799999989569,
+      "sonda": {
+        "pedidos": "ShareRowExclusiveLock",
+        "clientes": "ShareRowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Validar la FK",
+      "sql": "ALTER TABLE pedidos VALIDATE CONSTRAINT pedidos_cliente_fk",
+      "ms": 632.7801999999792,
+      "sonda": {
+        "pedidos": "ShareUpdateExclusiveLock",
+        "clientes": "RowShareLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareUpdateExclusiveLock",
+          "clientes": "RowShareLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 1.0262999999686144,
+    "p99": 10.964299999992363,
+    "max": 22.372399999992922,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 1.068799999949988,
+    "p99": 7.997399999992922,
+    "max": 21.26749999995809,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 728,
+    "p50": 1.030399999988731,
+    "p99": 17.474499999952968,
+    "max": 24.319799999997485,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:38:23.671Z"
+}

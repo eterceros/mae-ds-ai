@@ -1,0 +1,113 @@
+{
+  "escenario": "M5",
+  "variante": "segura",
+  "ronda": 1,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 502.7007000000449,
+  "pasos": [
+    {
+      "nombre": "CHECK sin validar",
+      "sql": "ALTER TABLE pedidos ADD CONSTRAINT region_no_nula CHECK (region IS NOT NULL) NOT VALID",
+      "ms": 2.3960000000079162,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Validar el CHECK",
+      "sql": "ALTER TABLE pedidos VALIDATE CONSTRAINT region_no_nula",
+      "ms": 404.36040000000503,
+      "sonda": {
+        "pedidos": "ShareUpdateExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareUpdateExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "SET NOT NULL (usa el CHECK)",
+      "sql": "ALTER TABLE pedidos ALTER COLUMN region SET NOT NULL",
+      "ms": 56.24829999997746,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "AccessExclusiveLock"
+        },
+        "espera": {
+          "pedidos": "AccessExclusiveLock"
+        }
+      },
+      "maxEsperando": 11,
+      "info": null
+    },
+    {
+      "nombre": "Quitar el CHECK",
+      "sql": "ALTER TABLE pedidos DROP CONSTRAINT region_no_nula",
+      "ms": 33.98780000000261,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {
+          "pedidos": "AccessExclusiveLock"
+        }
+      },
+      "maxEsperando": 5,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 1.033400000014808,
+    "p99": 15.284400000004098,
+    "max": 22.882199999992736,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 1.0770000000484288,
+    "p99": 71.56180000002496,
+    "max": 78.90760000003502,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 701,
+    "p50": 1.02990000002319,
+    "p99": 35.43780000001425,
+    "max": 78.90760000003502,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 11,
+  "error": null,
+  "fecha": "2026-10-22T16:37:42.893Z"
+}

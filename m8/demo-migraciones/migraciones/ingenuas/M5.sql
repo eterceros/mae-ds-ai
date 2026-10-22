@@ -1,0 +1,3 @@
+-- M5. SET NOT NULL directo frente a CHECK NOT VALID + VALIDATE + SET NOT NULL (ingenua)
+-- SET NOT NULL
+ALTER TABLE pedidos ALTER COLUMN region SET NOT NULL;

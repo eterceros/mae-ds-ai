@@ -1,0 +1,37 @@
+# Postgres 17 para la demo de migraciones.
+# Puerto del host: 18543 (cámbienlo con PGPORT_HOST si está ocupado; usen el mismo valor en PGPORT al correr los scripts).
+name: m8-demo-migraciones
+services:
+  postgres:
+    image: postgres:17
+    container_name: m8-demo-migraciones-pg
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:${PGPORT_HOST:-18543}:5432"
+    command:
+      - postgres
+      - -c
+      - shared_buffers=2GB
+      - -c
+      - maintenance_work_mem=512MB
+      - -c
+      - max_wal_size=8GB
+      - -c
+      - max_connections=200
+      - -c
+      - log_lock_waits=on
+      - -c
+      - deadlock_timeout=200ms
+    shm_size: 2gb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  pgdata:

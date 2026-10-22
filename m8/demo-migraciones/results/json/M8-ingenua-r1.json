@@ -1,0 +1,77 @@
+{
+  "escenario": "M8",
+  "variante": "ingenua",
+  "ronda": 1,
+  "nombreVariante": "ingenua",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 8033.857199999969,
+  "pasos": [
+    {
+      "nombre": "Otra sesión abre una transacción que lee pedidos y no termina en 8 s",
+      "sql": "-- sesión 2 (por ejemplo, un reporte)\nBEGIN;\nSELECT count(*) FROM pedidos WHERE id < 1000;  -- toma AccessShareLock hasta el COMMIT\n-- ... 8 s después: COMMIT;",
+      "ms": 25.5910000000149,
+      "sonda": null,
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "ALTER sin lock_timeout",
+      "sql": "ALTER TABLE pedidos ADD COLUMN cupon text",
+      "ms": 8001.5934000000125,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {
+          "pedidos": "AccessExclusiveLock"
+        }
+      },
+      "maxEsperando": 20,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1201,
+    "p50": 2.8821999999927357,
+    "p99": 10.62609999999404,
+    "max": 16.572299999999814,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 1607,
+    "p50": 4121.603200000012,
+    "p99": 7922.694900000002,
+    "max": 8001.011300000013,
+    "bloqueadas": 1602,
+    "bloqueadasLectura": 1122,
+    "bloqueadasEscritura": 480,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 2207,
+    "p50": 2675.485900000087,
+    "p99": 7895.356700000004,
+    "max": 8001.011300000013,
+    "bloqueadas": 1636,
+    "bloqueadasLectura": 1148,
+    "bloqueadasEscritura": 488,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 20,
+  "error": null,
+  "fecha": "2026-10-22T16:44:25.115Z"
+}

@@ -1,0 +1,12 @@
+// Se renombra el campo en el modelo: telefono -> celular. Es lo que haría una persona (o un asistente de IA).
+datasource db {
+  provider = "postgresql"
+}
+
+model Cliente {
+  id      Int     @id @default(autoincrement())
+  nombre  String
+  celular String?
+
+  @@map("cliente")
+}

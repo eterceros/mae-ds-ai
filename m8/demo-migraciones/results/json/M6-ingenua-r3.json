@@ -1,0 +1,67 @@
+{
+  "escenario": "M6",
+  "variante": "ingenua",
+  "ronda": 3,
+  "nombreVariante": "ingenua",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 536.877400000114,
+  "pasos": [
+    {
+      "nombre": "Agregar FK",
+      "sql": "ALTER TABLE pedidos ADD CONSTRAINT pedidos_cliente_fk FOREIGN KEY (cliente_id) REFERENCES clientes (id)",
+      "ms": 531.7887000001501,
+      "sonda": {
+        "pedidos": "ShareRowExclusiveLock",
+        "clientes": "ShareRowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "clientes": "ShareRowExclusiveLock",
+          "pedidos": "ShareRowExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 20,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 2.2053000000305474,
+    "p99": 8.113400000147521,
+    "max": 11.94980000006035,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 3.4873999999836087,
+    "p99": 507.2606000001542,
+    "max": 519.2153000000399,
+    "bloqueadas": 24,
+    "bloqueadasLectura": 3,
+    "bloqueadasEscritura": 21,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 708,
+    "p50": 3.245100000174716,
+    "p99": 379.53549999999814,
+    "max": 519.2153000000399,
+    "bloqueadas": 24,
+    "bloqueadasLectura": 3,
+    "bloqueadasEscritura": 21,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 20,
+  "error": null,
+  "fecha": "2026-10-22T17:04:05.719Z"
+}

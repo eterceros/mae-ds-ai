@@ -1,0 +1,63 @@
+{
+  "escenario": "M1",
+  "variante": "segura",
+  "ronda": 2,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 8.82819999998901,
+  "pasos": [
+    {
+      "nombre": "Agregar columna con lock_timeout",
+      "sql": "SET lock_timeout = '2000ms';\nALTER TABLE pedidos ADD COLUMN cupon text;\nRESET lock_timeout",
+      "ms": 5.622700000065379,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 2.512900000088848,
+    "p99": 15.4039000000339,
+    "max": 31.647700000088662,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 3.0195999999996275,
+    "p99": 7.1859999999869615,
+    "max": 8.598700000089593,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 602,
+    "p50": 2.95429999998305,
+    "p99": 8.20539999997709,
+    "max": 9.146700000041164,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:45:29.660Z"
+}

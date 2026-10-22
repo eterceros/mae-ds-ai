@@ -1,0 +1,81 @@
+{
+  "escenario": "M7",
+  "variante": "segura",
+  "ronda": 1,
+  "nombreVariante": "segura, lotes de 50000",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 77326.19200000004,
+  "pasos": [
+    {
+      "nombre": "Columna nueva",
+      "sql": "ALTER TABLE pedidos ADD COLUMN region_codigo smallint",
+      "ms": 3.0601000000024214,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Rellenar por lotes de 50000",
+      "sql": "-- repetir para a = 1, 1+50000, ... hasta max(id), cada lote en su propia transacción:\nUPDATE pedidos SET region_codigo = CASE region WHEN 'andina' THEN 1 WHEN 'valles' THEN 2 WHEN 'llanos' THEN 3 END WHERE id >= :a AND id < :a + 50000 AND region_codigo IS NULL",
+      "ms": 77318.17480000004,
+      "sonda": {
+        "pedidos": "RowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "RowExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": {
+        "lotes": 201
+      }
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 1.184899999992922,
+    "p99": 5.493099999963306,
+    "max": 9.807600000000093,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 15466,
+    "p50": 1.0284000000101514,
+    "p99": 11.40749999997206,
+    "max": 223.77049999992596,
+    "bloqueadas": 3,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 3,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 16066,
+    "p50": 1.0279999999911524,
+    "p99": 12.12440000002971,
+    "max": 223.77049999992596,
+    "bloqueadas": 3,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 3,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:41:36.854Z"
+}

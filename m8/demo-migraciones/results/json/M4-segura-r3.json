@@ -1,0 +1,63 @@
+{
+  "escenario": "M4",
+  "variante": "segura",
+  "ronda": 3,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 2906.6966999999713,
+  "pasos": [
+    {
+      "nombre": "Crear índice CONCURRENTLY",
+      "sql": "CREATE INDEX CONCURRENTLY pedidos_producto_idx ON pedidos (producto_id)",
+      "ms": 2898.3030999999028,
+      "sonda": "no transaccional",
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareUpdateExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 4.301900000078604,
+    "p99": 19.46710000000894,
+    "max": 63.38829999999143,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 582,
+    "p50": 3.212599999969825,
+    "p99": 14.71750000002794,
+    "max": 17.737800000002608,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 1182,
+    "p50": 3.150700000114739,
+    "p99": 11.985800000140443,
+    "max": 17.737800000002608,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T17:03:20.931Z"
+}

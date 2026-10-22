@@ -1,0 +1,153 @@
+{
+  "escenario": "M2",
+  "variante": "segura",
+  "ronda": 2,
+  "nombreVariante": "volátil (segura)",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 78632.20029999991,
+  "pasos": [
+    {
+      "nombre": "Columna anulable sin default",
+      "sql": "ALTER TABLE pedidos ADD COLUMN token uuid",
+      "ms": 2.3166000000201166,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Default solo para filas nuevas",
+      "sql": "ALTER TABLE pedidos ALTER COLUMN token SET DEFAULT gen_random_uuid()",
+      "ms": 2.2334000000264496,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Rellenar por lotes",
+      "sql": "-- repetir para a = 1, 1+50000, ... hasta max(id), cada lote en su propia transacción:\nUPDATE pedidos SET token = gen_random_uuid() WHERE id >= :a AND id < :a + 50000 AND token IS NULL",
+      "ms": 78034.5503,
+      "sonda": {
+        "pedidos": "RowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "RowExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": {
+        "lotes": 201
+      }
+    },
+    {
+      "nombre": "CHECK sin validar",
+      "sql": "ALTER TABLE pedidos ADD CONSTRAINT token_no_nulo CHECK (token IS NOT NULL) NOT VALID",
+      "ms": 3.327900000032969,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Validar el CHECK",
+      "sql": "ALTER TABLE pedidos VALIDATE CONSTRAINT token_no_nulo",
+      "ms": 570.534500000067,
+      "sonda": {
+        "pedidos": "ShareUpdateExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareUpdateExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "SET NOT NULL (usa el CHECK, no recorre)",
+      "sql": "ALTER TABLE pedidos ALTER COLUMN token SET NOT NULL",
+      "ms": 1.7229999999981374,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Quitar el CHECK",
+      "sql": "ALTER TABLE pedidos DROP CONSTRAINT token_no_nulo",
+      "ms": 1.900400000042282,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 1.8458999999566004,
+    "p99": 8.093699999968521,
+    "max": 12.523900000029244,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 15727,
+    "p50": 2.0546000000322238,
+    "p99": 283.70310000004247,
+    "max": 514.656500000041,
+    "bloqueadas": 549,
+    "bloqueadasLectura": 186,
+    "bloqueadasEscritura": 363,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 16327,
+    "p50": 2.0947000000160187,
+    "p99": 281.7732000000542,
+    "max": 514.656500000041,
+    "bloqueadas": 549,
+    "bloqueadasLectura": 186,
+    "bloqueadasEscritura": 363,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:47:44.465Z"
+}

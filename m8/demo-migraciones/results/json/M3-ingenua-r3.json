@@ -1,0 +1,65 @@
+{
+  "escenario": "M3",
+  "variante": "ingenua",
+  "ronda": 3,
+  "nombreVariante": "ingenua",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 8148.935000000056,
+  "pasos": [
+    {
+      "nombre": "Cambiar el tipo",
+      "sql": "ALTER TABLE pedidos ALTER COLUMN id TYPE bigint",
+      "ms": 8145.579099999974,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "AccessExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 20,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 3.716000000014901,
+    "p99": 20.470600000116974,
+    "max": 54.687700000125915,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 1630,
+    "p50": 4138.511900000041,
+    "p99": 7989.333800000139,
+    "max": 8067.535900000017,
+    "bloqueadas": 1629,
+    "bloqueadasLectura": 1140,
+    "bloqueadasEscritura": 489,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 2230,
+    "p50": 2695.071600000141,
+    "p99": 7963.546800000127,
+    "max": 8067.535900000017,
+    "bloqueadas": 1653,
+    "bloqueadasLectura": 1155,
+    "bloqueadasEscritura": 498,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 20,
+  "error": null,
+  "fecha": "2026-10-22T17:00:55.992Z"
+}

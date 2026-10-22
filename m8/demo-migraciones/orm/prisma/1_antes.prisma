@@ -1,0 +1,12 @@
+// Estado inicial: la tabla cliente con la columna "telefono".
+datasource db {
+  provider = "postgresql"
+}
+
+model Cliente {
+  id       Int     @id @default(autoincrement())
+  nombre   String
+  telefono String?
+
+  @@map("cliente")
+}

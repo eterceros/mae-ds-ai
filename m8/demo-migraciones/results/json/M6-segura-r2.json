@@ -1,0 +1,82 @@
+{
+  "escenario": "M6",
+  "variante": "segura",
+  "ronda": 2,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 549.2956999999005,
+  "pasos": [
+    {
+      "nombre": "FK sin validar",
+      "sql": "ALTER TABLE pedidos ADD CONSTRAINT pedidos_cliente_fk FOREIGN KEY (cliente_id) REFERENCES clientes (id) NOT VALID",
+      "ms": 5.454900000011548,
+      "sonda": {
+        "pedidos": "ShareRowExclusiveLock",
+        "clientes": "ShareRowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Validar la FK",
+      "sql": "ALTER TABLE pedidos VALIDATE CONSTRAINT pedidos_cliente_fk",
+      "ms": 539.3004999998957,
+      "sonda": {
+        "pedidos": "ShareUpdateExclusiveLock",
+        "clientes": "RowShareLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareUpdateExclusiveLock",
+          "clientes": "RowShareLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 3.545799999963492,
+    "p99": 14.235799999907613,
+    "max": 39.650099999969825,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 2.329399999929592,
+    "p99": 8.046099999919534,
+    "max": 18.32990000001155,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 710,
+    "p50": 2.6546999998390675,
+    "p99": 8.65749999997206,
+    "max": 18.32990000001155,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:51:42.272Z"
+}

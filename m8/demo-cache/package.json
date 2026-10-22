@@ -1,0 +1,24 @@
+{
+  "name": "demo-cache",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S06): caché con Postgres, Redis y Valkey, con mediciones reales (latencia, consultas a la base, bytes, hit ratio, estampida, datos obsoletos, rate limiting y expulsión).",
+  "scripts": {
+    "up": "docker compose up -d --wait",
+    "down": "docker compose down -v",
+    "seed": "node scripts/seed.mjs",
+    "start": "node src/server.mjs",
+    "read": "node scripts/bench-read.mjs",
+    "stampede": "node scripts/bench-stampede.mjs",
+    "stale": "node scripts/bench-stale.mjs",
+    "structures": "node scripts/bench-structures.mjs",
+    "eviction": "node scripts/bench-eviction.mjs",
+    "all": "npm run read && npm run stampede && npm run stale && npm run structures && npm run eviction"
+  },
+  "dependencies": {
+    "fastify": "^5.12.7",
+    "ioredis": "^6.0.0",
+    "pg": "^8.23.1"
+  }
+}

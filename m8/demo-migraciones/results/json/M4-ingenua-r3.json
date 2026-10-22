@@ -1,0 +1,65 @@
+{
+  "escenario": "M4",
+  "variante": "ingenua",
+  "ronda": 3,
+  "nombreVariante": "ingenua",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 1777.0812999999616,
+  "pasos": [
+    {
+      "nombre": "Crear índice",
+      "sql": "CREATE INDEX pedidos_producto_idx ON pedidos (producto_id)",
+      "ms": 1775.277599999914,
+      "sonda": {
+        "pedidos": "ShareLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 20,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 1.982700000051409,
+    "p99": 8.0293000000529,
+    "max": 15.112800000002608,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 356,
+    "p50": 596.1888999999501,
+    "p99": 1706.874599999981,
+    "max": 1760.437799999956,
+    "bloqueadas": 281,
+    "bloqueadasLectura": 172,
+    "bloqueadasEscritura": 109,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 956,
+    "p50": 4.277000000001863,
+    "p99": 1581.2961999999825,
+    "max": 1760.437799999956,
+    "bloqueadas": 281,
+    "bloqueadasLectura": 172,
+    "bloqueadasEscritura": 109,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 20,
+  "error": null,
+  "fecha": "2026-10-22T17:03:03.628Z"
+}

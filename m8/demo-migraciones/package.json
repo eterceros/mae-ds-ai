@@ -1,0 +1,24 @@
+{
+  "name": "demo-migraciones",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8): migraciones de esquema en Postgres 17 con carga concurrente; qué bloquea cada ALTER y cómo hacerlo sin cortar el servicio.",
+  "scripts": {
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down -v",
+    "preparar": "node scripts/preparar.mjs",
+    "escenarios": "node scripts/correr.mjs",
+    "sql": "node scripts/exportar-sql.mjs",
+    "squawk": "node scripts/squawk.mjs",
+    "orm": "node scripts/orm-renombre.mjs",
+    "todo": "npm run db:up && npm run preparar && npm run escenarios && npm run sql && npm run squawk && npm run orm"
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "prisma": "7.10.1",
+    "squawk-cli": "2.70.0"
+  }
+}

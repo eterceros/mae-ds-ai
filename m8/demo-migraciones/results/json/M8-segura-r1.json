@@ -1,0 +1,79 @@
+{
+  "escenario": "M8",
+  "variante": "segura",
+  "ronda": 1,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 8465.807399999932,
+  "pasos": [
+    {
+      "nombre": "Otra sesión abre una transacción que lee pedidos y no termina en 8 s",
+      "sql": "-- sesión 2 (por ejemplo, un reporte)\nBEGIN;\nSELECT count(*) FROM pedidos WHERE id < 1000;  -- toma AccessShareLock hasta el COMMIT\n-- ... 8 s después: COMMIT;",
+      "ms": 13.453899999964051,
+      "sonda": null,
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "ALTER con lock_timeout = 200 ms y reintentos cada 500 ms",
+      "sql": "SET lock_timeout = '200ms';\n-- reintentar ante el error 55P03 (lock_not_available), esperando 500 ms entre intentos:\nALTER TABLE pedidos ADD COLUMN cupon text;\nRESET lock_timeout;",
+      "ms": 8445.765100000077,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {
+          "pedidos": "AccessExclusiveLock"
+        }
+      },
+      "maxEsperando": 20,
+      "info": {
+        "intentos": 13
+      }
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 1.9091999999945983,
+    "p99": 9.73789999994915,
+    "max": 14.780599999940023,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 1693,
+    "p50": 2.9193999998969957,
+    "p99": 198.5895999999484,
+    "max": 206.81809999991674,
+    "bloqueadas": 258,
+    "bloqueadasLectura": 177,
+    "bloqueadasEscritura": 81,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 2293,
+    "p50": 2.8937999999616295,
+    "p99": 196.48829999996815,
+    "max": 206.81809999991674,
+    "bloqueadas": 258,
+    "bloqueadasLectura": 177,
+    "bloqueadasEscritura": 81,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 20,
+  "error": null,
+  "fecha": "2026-10-22T16:44:47.944Z"
+}

@@ -1,0 +1,107 @@
+{
+  "escenario": "M5",
+  "variante": "segura",
+  "ronda": 2,
+  "nombreVariante": "segura",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 353.43050000001676,
+  "pasos": [
+    {
+      "nombre": "CHECK sin validar",
+      "sql": "ALTER TABLE pedidos ADD CONSTRAINT region_no_nula CHECK (region IS NOT NULL) NOT VALID",
+      "ms": 4.07480000006035,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Validar el CHECK",
+      "sql": "ALTER TABLE pedidos VALIDATE CONSTRAINT region_no_nula",
+      "ms": 338.8106000002008,
+      "sonda": {
+        "pedidos": "ShareUpdateExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "ShareUpdateExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "SET NOT NULL (usa el CHECK)",
+      "sql": "ALTER TABLE pedidos ALTER COLUMN region SET NOT NULL",
+      "ms": 1.3496000000741333,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Quitar el CHECK",
+      "sql": "ALTER TABLE pedidos DROP CONSTRAINT region_no_nula",
+      "ms": 1.85730000003241,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 3.5670000000391155,
+    "p99": 9.580399999860674,
+    "max": 14.203199999872595,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 3.14449999993667,
+    "p99": 11.218399999896064,
+    "max": 13.992899999953806,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 671,
+    "p50": 2.978499999968335,
+    "p99": 9.161700000055134,
+    "max": 13.992899999953806,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:51:12.431Z"
+}

@@ -1,0 +1,81 @@
+{
+  "escenario": "M7",
+  "variante": "segura-lotes-chicos",
+  "ronda": 3,
+  "nombreVariante": "segura, lotes de 5000 y pausa de 20 ms",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 123743.57200000016,
+  "pasos": [
+    {
+      "nombre": "Columna nueva",
+      "sql": "ALTER TABLE pedidos ADD COLUMN region_codigo smallint",
+      "ms": 3.110700000077486,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Rellenar por lotes de 5000 con pausa",
+      "sql": "-- repetir para a = 1, 1+5000, ... hasta max(id), cada lote en su propia transacción, con 20 ms de pausa entre lotes:\nUPDATE pedidos SET region_codigo = CASE region WHEN 'andina' THEN 1 WHEN 'valles' THEN 2 WHEN 'llanos' THEN 3 END WHERE id >= :a AND id < :a + 5000 AND region_codigo IS NULL",
+      "ms": 123734.28720000014,
+      "sonda": {
+        "pedidos": "RowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "RowExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": {
+        "lotes": 2001
+      }
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 3.2356000002473593,
+    "p99": 8.435300000011921,
+    "max": 12.133799999952316,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 24749,
+    "p50": 2.221400000154972,
+    "p99": 966.2164000002667,
+    "max": 2219.25260000024,
+    "bloqueadas": 468,
+    "bloqueadasLectura": 312,
+    "bloqueadasEscritura": 156,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 25349,
+    "p50": 2.22289999993518,
+    "p99": 951.286600000225,
+    "max": 2219.25260000024,
+    "bloqueadas": 468,
+    "bloqueadasLectura": 312,
+    "bloqueadasEscritura": 156,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T17:09:46.363Z"
+}

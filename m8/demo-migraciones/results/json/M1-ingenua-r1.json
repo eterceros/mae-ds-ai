@@ -1,0 +1,63 @@
+{
+  "escenario": "M1",
+  "variante": "ingenua",
+  "ronda": 1,
+  "nombreVariante": "ingenua",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 5.117099999999482,
+  "pasos": [
+    {
+      "nombre": "Agregar columna",
+      "sql": "ALTER TABLE pedidos ADD COLUMN cupon text",
+      "ms": 2.5903999999991356,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1201,
+    "p50": 1.8419000000003507,
+    "p99": 7.1850000000004,
+    "max": 21.936499999999796,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 1.8494000000009692,
+    "p99": 5.537299999999959,
+    "max": 9.72860000000037,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 600,
+    "p50": 1.8374000000003434,
+    "p99": 8.14140000000043,
+    "max": 12.411200000000463,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:31:48.904Z"
+}

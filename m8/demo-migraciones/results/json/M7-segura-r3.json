@@ -1,0 +1,81 @@
+{
+  "escenario": "M7",
+  "variante": "segura",
+  "ronda": 3,
+  "nombreVariante": "segura, lotes de 50000",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 83933.95009999978,
+  "pasos": [
+    {
+      "nombre": "Columna nueva",
+      "sql": "ALTER TABLE pedidos ADD COLUMN region_codigo smallint",
+      "ms": 5.25289999996312,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    },
+    {
+      "nombre": "Rellenar por lotes de 50000",
+      "sql": "-- repetir para a = 1, 1+50000, ... hasta max(id), cada lote en su propia transacción:\nUPDATE pedidos SET region_codigo = CASE region WHEN 'andina' THEN 1 WHEN 'valles' THEN 2 WHEN 'llanos' THEN 3 END WHERE id >= :a AND id < :a + 50000 AND region_codigo IS NULL",
+      "ms": 83923.10800000001,
+      "sonda": {
+        "pedidos": "RowExclusiveLock"
+      },
+      "observado": {
+        "concedido": {
+          "pedidos": "RowExclusiveLock"
+        },
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": {
+        "lotes": 201
+      }
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 2.6236999998800457,
+    "p99": 10.00539999990724,
+    "max": 15.324199999915436,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 16787,
+    "p50": 2.804699999978766,
+    "p99": 3470.1358999998774,
+    "max": 4342.227900000056,
+    "bloqueadas": 2117,
+    "bloqueadasLectura": 1078,
+    "bloqueadasEscritura": 1039,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 17387,
+    "p50": 2.816700000083074,
+    "p99": 3445.6991000000853,
+    "max": 4342.227900000056,
+    "bloqueadas": 2277,
+    "bloqueadasLectura": 1173,
+    "bloqueadasEscritura": 1104,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T17:07:26.686Z"
+}

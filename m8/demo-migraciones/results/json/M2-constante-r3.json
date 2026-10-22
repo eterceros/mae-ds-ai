@@ -1,0 +1,63 @@
+{
+  "escenario": "M2",
+  "variante": "constante",
+  "ronda": 3,
+  "nombreVariante": "constante",
+  "filas": 10000000,
+  "ritmo": 200,
+  "pool": 20,
+  "umbralBloqueo": 100,
+  "duracionMs": 4.1632999998983,
+  "pasos": [
+    {
+      "nombre": "DEFAULT constante",
+      "sql": "ALTER TABLE pedidos ADD COLUMN prioridad integer NOT NULL DEFAULT 0",
+      "ms": 2.474299999885261,
+      "sonda": {
+        "pedidos": "AccessExclusiveLock"
+      },
+      "observado": {
+        "concedido": {},
+        "espera": {}
+      },
+      "maxEsperando": 0,
+      "info": null
+    }
+  ],
+  "antes": {
+    "n": 1200,
+    "p50": 2.2626000000163913,
+    "p99": 9.248599999817088,
+    "max": 26.626699999906123,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "durante": {
+    "n": 200,
+    "p50": 2.5408999999053776,
+    "p99": 22.660199999809265,
+    "max": 37.906999999890104,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "desdeInicio": {
+    "n": 601,
+    "p50": 2.9590999998617917,
+    "p99": 11.979300000006333,
+    "max": 37.906999999890104,
+    "bloqueadas": 0,
+    "bloqueadasLectura": 0,
+    "bloqueadasEscritura": 0,
+    "errores": 0,
+    "codigosError": []
+  },
+  "maxEsperandoLock": 0,
+  "error": null,
+  "fecha": "2026-10-22T16:58:34.972Z"
+}
