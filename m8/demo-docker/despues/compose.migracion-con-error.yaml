@@ -1,0 +1,11 @@
+# DESPUES (escenario K6, caso de falla): se suma a compose.yaml y apunta migrate
+# a una carpeta con una segunda migracion rota. migrate sale con codigo 1 y la
+# API no arranca: es la proteccion que da service_completed_successfully.
+# Desde despues/:
+#   docker compose -f compose.yaml -f compose.migracion-con-error.yaml up -d --wait
+services:
+  migrate:
+    environment:
+      MIGRACIONES_DIR: /migraciones-k6
+    volumes:
+      - ./migraciones-con-error:/migraciones-k6:ro

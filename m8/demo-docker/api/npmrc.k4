@@ -1,0 +1,4 @@
+# Registro privado ficticio para el escenario K4. npm expande ${NPM_TOKEN}
+# desde el entorno, asi el token nunca se escribe en este archivo.
+@s08:registry=https://npm.ejemplo.invalid/
+//npm.ejemplo.invalid/:_authToken=${NPM_TOKEN}

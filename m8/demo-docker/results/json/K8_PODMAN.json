@@ -1,0 +1,231 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T19:57:14.837Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop sobre WSL2, VM con 20 CPU y 31 GB, almacén de imágenes containerd"
+  },
+  "podman": {
+    "version": [
+      "5.8.3",
+      "5.8.9"
+    ],
+    "rootless": true
+  },
+  "builds": [
+    18931.7225,
+    18709.452,
+    18543.9059
+  ],
+  "buildsJobs": [
+    10902.8265,
+    12086.9914,
+    11732.3246
+  ],
+  "imagen": {
+    "bytes": 249197434,
+    "capas": 9,
+    "usuario": "node",
+    "cmd": [
+      "node",
+      "dist/main.js"
+    ],
+    "manifiesto": "application/vnd.oci.image.manifest.v1+json",
+    "healthcheck": null,
+    "capasBase": [
+      "sha256:9b35de7893378218e365c34c2c735fb0032a859112fb7345ca8ea73f9aa1db70",
+      "sha256:b405c072d1d6b8d191f8fe47db6e3c37ff40836c3970c2c03e51b1adc16563fb",
+      "sha256:0ff2c5ad5da71f20291ad85c9f543eaf29984d9883c8c51a0bb117ec2abe097a",
+      "sha256:881f54f72c69e2a38c7f8a642780e61968bea9efe74300b88a2df728c24c7b0b",
+      "sha256:3e12bfea3588951aab89585809de07499eb5094dc38891bdb294e67d7a9327c0"
+    ],
+    "comprimidoBytes": 87266736
+  },
+  "ref": {
+    "tiempos": [
+      7029.9206,
+      6861.4802,
+      7603.3798
+    ],
+    "ids": [
+      "sha256:4ce1aaf344444cb2235e21b948840cf8767bbb9078f72a7729f2757f25d52b1e",
+      "sha256:ddca685daddf4ee9ef70bd413ccbda40cd53850cd704cec0fbd319c95e3db285",
+      "sha256:d41216dd3687c10abf2b3e0d5f2a0789f8187a385dc26ff98d612ca153d9e107"
+    ],
+    "bytes": 249185792,
+    "capas": 10,
+    "mismasBase": true
+  },
+  "resultados": [
+    {
+      "proveedor": {
+        "id": "docker-compose",
+        "env": {},
+        "version": "Docker Compose version v5.6.0",
+        "ejecutable": "C:\\Users\\edson\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe"
+      },
+      "corridas": [
+        {
+          "up": 0,
+          "upMs": 3771,
+          "saludMs": 4033,
+          "items": 3,
+          "pgInicio": 0.97230517578125,
+          "pgSano": 2.882033447265625,
+          "migInicio": 3.080392822265625,
+          "migFin": 3.16367333984375,
+          "apiInicio": 3.739491943359375,
+          "migArranques": 1,
+          "orden": true,
+          "salidaUp": "\u001b[4m>>>> Executing external compose provider \"C:\\\\Users\\\\edson\\\\AppData\\\\Local\\\\Programs\\\\DockerDesktop\\\\resources\\\\bin\\\\docker-compose.exe\". Please see podman-compose(1) for how to disable this message. <<<<\n\n\u001b[0m Volume s08-podman_pgdata Creating \n Volume s08-podman_pgdata Creating \n Network s08-podman_default Creating \n Network s08-podman_default Creating \n Network s08-podman_default Created \n Network s08-podman_default Created \n Volume s08-podman_pgdata Created \n Volume s08-podman_pgdata Created \n Container s08-podman-postgres-1 Creating \n Container s08-podman-postgres-1 Created \n Container s08-podman-migrate-1 Creating \n Container s08-podman-migrate-1 Created \n Container s08-podman-api-1 Creating \n Container s08-podman-api-1 Created \n Container s08-podman-postgres-1 Starting \n Container s08-podman-postgres-1 Started \n Container s08-podman-postgres-1 Waiting \n Container s08-podman-postgres-1 Healthy \n Container s08-podman-migrate-1 Starting \n Container s08-podman-migrate-1 Started \n Container s08-podman-migrate-1 Waiting \n Container s08-podman-postgres-1 Waiting \n Container s08-podman-postgres-1 Healthy \n Container s08-podman-migrate-1 Exited \n Container s08-podman-api-1 Starting \n Container s08-podman-api-1 Started \n"
+        },
+        {
+          "up": 0,
+          "upMs": 3725,
+          "saludMs": 4030,
+          "items": 3,
+          "pgInicio": 0.943286865234375,
+          "pgSano": 2.768572265625,
+          "migInicio": 3.04372705078125,
+          "migFin": 3.125130126953125,
+          "apiInicio": 3.687447998046875,
+          "migArranques": 1,
+          "orden": true,
+          "salidaUp": "\u001b[4m>>>> Executing external compose provider \"C:\\\\Users\\\\edson\\\\AppData\\\\Local\\\\Programs\\\\DockerDesktop\\\\resources\\\\bin\\\\docker-compose.exe\". Please see podman-compose(1) for how to disable this message. <<<<\n\n\u001b[0m Network s08-podman_default Creating \n Network s08-podman_default Creating \n Volume s08-podman_pgdata Creating \n Volume s08-podman_pgdata Creating \n Network s08-podman_default Created \n Network s08-podman_default Created \n Volume s08-podman_pgdata Created \n Volume s08-podman_pgdata Created \n Container s08-podman-postgres-1 Creating \n Container s08-podman-postgres-1 Created \n Container s08-podman-migrate-1 Creating \n Container s08-podman-migrate-1 Created \n Container s08-podman-api-1 Creating \n Container s08-podman-api-1 Created \n Container s08-podman-postgres-1 Starting \n Container s08-podman-postgres-1 Started \n Container s08-podman-postgres-1 Waiting \n Container s08-podman-postgres-1 Healthy \n Container s08-podman-migrate-1 Starting \n Container s08-podman-migrate-1 Started \n Container s08-podman-postgres-1 Waiting \n Container s08-podman-migrate-1 Waiting \n Container s08-podman-postgres-1 Healthy \n Container s08-podman-migrate-1 Exited \n Container s08-podman-api-1 Starting \n Container s08-podman-api-1 Started \n"
+        },
+        {
+          "up": 0,
+          "upMs": 3868,
+          "saludMs": 4818,
+          "items": 3,
+          "pgInicio": 1.0166787109375,
+          "pgSano": 2.753118896484375,
+          "migInicio": 3.1404580078125,
+          "migFin": 3.220915283203125,
+          "apiInicio": 3.8361806640625,
+          "migArranques": 1,
+          "orden": true,
+          "salidaUp": "\u001b[4m>>>> Executing external compose provider \"C:\\\\Users\\\\edson\\\\AppData\\\\Local\\\\Programs\\\\DockerDesktop\\\\resources\\\\bin\\\\docker-compose.exe\". Please see podman-compose(1) for how to disable this message. <<<<\n\n\u001b[0m Network s08-podman_default Creating \n Volume s08-podman_pgdata Creating \n Volume s08-podman_pgdata Creating \n Network s08-podman_default Creating \n Network s08-podman_default Created \n Network s08-podman_default Created \n Volume s08-podman_pgdata Created \n Volume s08-podman_pgdata Created \n Container s08-podman-postgres-1 Creating \n Container s08-podman-postgres-1 Created \n Container s08-podman-migrate-1 Creating \n Container s08-podman-migrate-1 Created \n Container s08-podman-api-1 Creating \n Container s08-podman-api-1 Created \n Container s08-podman-postgres-1 Starting \n Container s08-podman-postgres-1 Started \n Container s08-podman-postgres-1 Waiting \n Container s08-podman-postgres-1 Healthy \n Container s08-podman-migrate-1 Starting \n Container s08-podman-migrate-1 Started \n Container s08-podman-postgres-1 Waiting \n Container s08-podman-migrate-1 Waiting \n Container s08-podman-postgres-1 Healthy \n Container s08-podman-migrate-1 Exited \n Container s08-podman-api-1 Starting \n Container s08-podman-api-1 Started \n"
+        }
+      ],
+      "usuario": {
+        "idApi": "uid=1000(node) gid=1000(node) groups=1000(node)",
+        "idPg": "uid=0(root) gid=0(root) groups=0(root)",
+        "topApi": "USER        HUSER       COMMAND\nnode        525287      node dist/main.js",
+        "topPg": "USER        HUSER       COMMAND\npostgres    525286      postgres",
+        "capEff": "0000000000000000",
+        "escribeCodigo": false,
+        "escribeEtc": false,
+        "uidMap": "null",
+        "vm": "uid=1000(user) gid=1000(user) groups=1000(user),10(wheel)\n\nuser:524288:65536\n\n# procesos (cuantos, usuario, programa):\n      7 525286   postgres\n     12 user     conmon\n      1 user     podman"
+      },
+      "falla": {
+        "up": 1,
+        "salida": " Container s08-podman-migrate-1 Waiting \n Container s08-podman-migrate-1 Error service \"migrate\" didn't complete successfully: exit 1\nservice \"migrate\" didn't complete successfully: exit 1\nError: executing C:\\Users\\edson\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe -f C:\\Users\\edson\\src\\umss\\mae-ds-ai\\m8\\demo-docker\\.tmp\\k8\\compose.yaml -f C:\\Users\\edson\\src\\umss\\mae-ds-ai\\m8\\demo-docker\\.tmp\\k8\\compose.migracion-con-error.yaml -p s08-podman up -d: exit status 1",
+        "migrate": {
+          "existe": true,
+          "nombre": "s08-podman-migrate-1",
+          "estado": "exited",
+          "codigo": 1,
+          "inicio": "2026-10-24T16:00:26.956794705-04:00"
+        },
+        "api": {
+          "existe": true,
+          "nombre": "s08-podman-api-1",
+          "estado": "created",
+          "codigo": 0,
+          "inicio": null
+        },
+        "salud": false,
+        "logMigrate": "migracion aplicada: 001_crear_items.sqlMigracion fallida: fallo 002_columna_rota.sql: column \"stock\" does not exist"
+      }
+    },
+    {
+      "proveedor": {
+        "id": "podman-compose",
+        "env": {
+          "PODMAN_COMPOSE_PROVIDER": "C:\\Users\\edson\\src\\umss\\mae-ds-ai\\m8\\demo-docker\\.tmp\\k8\\podman-compose.cmd"
+        },
+        "via": "uvx --from podman-compose==1.6.0",
+        "version": "podman version 5.8.3 / podman-compose version 1.6.0",
+        "ejecutable": "C:\\Users\\edson\\src\\umss\\mae-ds-ai\\m8\\demo-docker\\.tmp\\k8\\podman-compose.cmd"
+      },
+      "corridas": [
+        {
+          "up": 0,
+          "upMs": 9044,
+          "saludMs": 9491,
+          "items": 3,
+          "pgInicio": 5.94578173828125,
+          "pgSano": 7.443119384765625,
+          "migInicio": 7.890749267578125,
+          "migFin": 7.9730498046875,
+          "apiInicio": 8.922772216796876,
+          "migArranques": 2,
+          "orden": true,
+          "salidaUp": "\u001b[4m>>>> Executing external compose provider \"C:\\\\Users\\\\edson\\\\src\\\\umss\\\\mae-ds-ai\\\\m8\\\\demo-docker\\\\.tmp\\\\k8\\\\podman-compose.cmd\". Please see podman-compose(1) for how to disable this message. <<<<\n\n\u001b[0m82903352d6faf8f8a318bc4353d1cb1db67d4a5ff968d2799b2718e2cb00afa2\n0b3db5a50b7990ebebc8bfb46e2311a86a545b91635593318d62779782551ab1\n5cfbbe6a64ae6ecfd2bec0d35559ddd3b339d6e7b89ec30cfba9b9ed88c7468d\n2a23bc4ae1bb40966d92fc4b5b0f772a08b2472e967401c65aabae90ccd018fa\nf2d7b2f940cfc4a1e9374a71666e3e00ddacf1480819b4776f1c3e9fab417dbf\nacfa5be7bbcad385282928e9e284529fa478665f645eac9b70c43b395d7856ac\ns08-podman_postgres_1\ns08-podman_migrate_1\ns08-podman_api_1\n"
+        },
+        {
+          "up": 0,
+          "upMs": 9357,
+          "saludMs": 9886,
+          "items": 3,
+          "pgInicio": 5.827267822265625,
+          "pgSano": 7.792373291015625,
+          "migInicio": 8.244132568359374,
+          "migFin": 8.326257080078125,
+          "apiInicio": 9.257069091796875,
+          "migArranques": 2,
+          "orden": true,
+          "salidaUp": "\u001b[4m>>>> Executing external compose provider \"C:\\\\Users\\\\edson\\\\src\\\\umss\\\\mae-ds-ai\\\\m8\\\\demo-docker\\\\.tmp\\\\k8\\\\podman-compose.cmd\". Please see podman-compose(1) for how to disable this message. <<<<\n\n\u001b[0m82903352d6faf8f8a318bc4353d1cb1db67d4a5ff968d2799b2718e2cb00afa2\n0b3db5a50b7990ebebc8bfb46e2311a86a545b91635593318d62779782551ab1\n78fa9d12e70a8ceec817a29b6c68447bea0027d45225b2eb45c519b88989be03\nb1e66c5997dd8042c841d1303173d1e5753e7e440586ac7e3966e6ca2dfb6a9c\n7bf8774ca1a1ebb5a7ea721ca6311c363632ad3399d14414bb4f4eca2497a199\ne30b0d8911eb9200c7a441111149c49973b8a3f9732ddc15578a51a5148b80ed\ns08-podman_postgres_1\ns08-podman_migrate_1\ns08-podman_api_1\n"
+        },
+        {
+          "up": 0,
+          "upMs": 9072,
+          "saludMs": 9581,
+          "items": 3,
+          "pgInicio": 6.00463720703125,
+          "pgSano": 7.474805908203125,
+          "migInicio": 7.91883740234375,
+          "migFin": 8.010822509765624,
+          "apiInicio": 8.9593955078125,
+          "migArranques": 2,
+          "orden": true,
+          "salidaUp": "\u001b[4m>>>> Executing external compose provider \"C:\\\\Users\\\\edson\\\\src\\\\umss\\\\mae-ds-ai\\\\m8\\\\demo-docker\\\\.tmp\\\\k8\\\\podman-compose.cmd\". Please see podman-compose(1) for how to disable this message. <<<<\n\n\u001b[0m82903352d6faf8f8a318bc4353d1cb1db67d4a5ff968d2799b2718e2cb00afa2\n0b3db5a50b7990ebebc8bfb46e2311a86a545b91635593318d62779782551ab1\n72a1094fe62f1a7753c9865c6c97711942ec40b6a52dabe3593af2bc67faf322\n71f2289856233773b6c73709ac9132c17313252f96bbc8678ca62ae53cd5fdc4\ned520836b49360499a8611b45b1a6067b246ae39e6467d67e8cedc5d6fc2ed06\nc754a870f0b1382c5eaf1128afde187864418ef4db9199258df7453406c62b9c\ns08-podman_postgres_1\ns08-podman_migrate_1\ns08-podman_api_1\n"
+        }
+      ],
+      "usuario": null,
+      "falla": {
+        "up": 0,
+        "salida": "s08-podman_migrate_1",
+        "migrate": {
+          "existe": true,
+          "nombre": "s08-podman_migrate_1",
+          "estado": "exited",
+          "codigo": 1,
+          "inicio": "2026-10-24T16:02:04.948784513-04:00"
+        },
+        "api": {
+          "existe": true,
+          "nombre": "s08-podman_api_1",
+          "estado": "running",
+          "codigo": 0,
+          "inicio": "2026-10-24T16:02:05.105578386-04:00"
+        },
+        "salud": true,
+        "logMigrate": "migracion aplicada: 001_crear_items.sqlMigracion fallida: fallo 002_columna_rota.sql: column \"stock\" does not exist\nMigracion fallida: fallo 002_columna_rota.sql: column \"stock\" does not exist"
+      }
+    }
+  ],
+  "refArranque": [
+    3371,
+    3501,
+    3397
+  ]
+}

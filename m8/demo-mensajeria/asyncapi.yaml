@@ -1,0 +1,147 @@
+asyncapi: 3.1.0
+info:
+  title: Orders events (demo-mensajeria, M8 S08)
+  version: 1.0.0
+  description: |
+    Contrato de los eventos que publica el servicio de pedidos a través de la outbox.
+    Se valida en CI con la CLI de AsyncAPI (`npm run q8`) y los mensajes reales se comprueban
+    contra los esquemas de este archivo (scripts/q8-contract.ts).
+
+defaultContentType: application/json
+
+servers:
+  local:
+    host: 127.0.0.1:18372
+    protocol: amqp
+    protocolVersion: 0.9.1
+    description: RabbitMQ 4.4 de la demo (docker-compose.yml)
+
+channels:
+  orderCreated:
+    address: order.created
+    description: Clave de enrutamiento `order.created` en el exchange `orders` (topic).
+    messages:
+      orderCreated:
+        $ref: '#/components/messages/OrderCreated'
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: orders
+          type: topic
+          durable: true
+          autoDelete: false
+          vhost: /
+        bindingVersion: 0.3.0
+
+  summaryRequested:
+    address: summary.requested
+    description: Encargo de resumen (E4). Exchange `summaries` (direct), cola quorum `summaries.requested`.
+    messages:
+      summaryRequested:
+        $ref: '#/components/messages/SummaryRequested'
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: summaries
+          type: direct
+          durable: true
+          autoDelete: false
+          vhost: /
+        bindingVersion: 0.3.0
+
+operations:
+  publishOrderCreated:
+    action: send
+    summary: El relay de la outbox publica un pedido nuevo (al menos una vez; puede repetirse).
+    channel:
+      $ref: '#/channels/orderCreated'
+    messages:
+      - $ref: '#/channels/orderCreated/messages/orderCreated'
+    bindings:
+      amqp:
+        deliveryMode: 2
+        mandatory: false
+        bindingVersion: 0.3.0
+
+  publishSummaryRequested:
+    action: send
+    summary: La API de E4 encarga un resumen (202 Accepted) y el relay lo publica.
+    channel:
+      $ref: '#/channels/summaryRequested'
+    messages:
+      - $ref: '#/channels/summaryRequested/messages/summaryRequested'
+
+components:
+  messages:
+    OrderCreated:
+      name: OrderCreated
+      title: Pedido creado
+      contentType: application/json
+      correlationId:
+        description: El eventId identifica el evento; las copias repetidas comparten el mismo valor.
+        location: $message.payload#/eventId
+      headers:
+        $ref: '#/components/schemas/TraceHeaders'
+      payload:
+        $ref: '#/components/schemas/OrderCreatedPayload'
+      examples:
+        - name: ejemplo
+          headers:
+            traceparent: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
+          payload:
+            eventId: 7d0e3a2c-6a51-4c4b-9a43-2f3f0b6a1d10
+            orderId: 2b6f0cde-91a4-4c1e-8f6e-3c9a7e2d4b11
+            seq: 42
+            customer: c-5
+            amountCents: 1042
+            occurredAt: '2026-10-24T18:00:00.000Z'
+
+    SummaryRequested:
+      name: SummaryRequested
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/TraceHeaders'
+      payload:
+        type: object
+        required: [jobId]
+        properties:
+          jobId:
+            type: string
+            format: uuid
+
+  schemas:
+    TraceHeaders:
+      type: object
+      required: [traceparent]
+      properties:
+        traceparent:
+          type: string
+          description: W3C Trace Context (versión 00).
+          pattern: '^00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$'
+
+    OrderCreatedPayload:
+      type: object
+      required: [eventId, orderId, seq, customer, amountCents, occurredAt]
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Clave de idempotencia del consumidor (tabla processed_messages).
+        orderId:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 1
+        customer:
+          type: string
+          minLength: 1
+        amountCents:
+          type: integer
+          minimum: 1
+          description: Importe en centavos (entero; nunca coma flotante).
+        occurredAt:
+          type: string
+          format: date-time

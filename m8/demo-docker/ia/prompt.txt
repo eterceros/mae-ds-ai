@@ -1,0 +1,5 @@
+Write a production Dockerfile for this NestJS API (Node.js 24, TypeScript).
+package.json scripts: "build": "tsc -p tsconfig.build.json", "start": "node dist/main.js".
+Files: package.json, package-lock.json, tsconfig.json, tsconfig.build.json, src/.
+The API listens on port 3000 and reads Postgres using the env vars PGHOST, PGUSER, PGPASSWORD, PGDATABASE.
+Reply only with the Dockerfile.

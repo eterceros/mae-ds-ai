@@ -1,0 +1,31 @@
+{
+  "name": "demo-resiliencia",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S08): resiliencia en el código de una llamada entre dos servicios (timeout, reintentos con backoff y jitter, circuit breaker, bulkhead), con fallas inyectadas por Toxiproxy y carga con k6.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "up": "docker compose up -d --build --wait",
+    "down": "docker compose down -v",
+    "r0": "node scripts/medir.ts R0",
+    "r1": "node scripts/medir.ts R1",
+    "r2": "node scripts/medir.ts R2",
+    "r3": "node scripts/medir.ts R3",
+    "r4": "node scripts/medir.ts R4",
+    "r5": "node scripts/medir.ts R5",
+    "r6": "node scripts/medir.ts R6",
+    "medir": "node scripts/medir.ts",
+    "informe": "node scripts/informe.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "opossum": "10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T19:05:41.756Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop sobre WSL2, VM con 20 CPU y 31 GB, almacén de imágenes containerd"
+  },
+  "lineas": [
+    {
+      "up": 0,
+      "total": 5845,
+      "pgSano": 1254,
+      "migInicio": 1750,
+      "migFin": 1947,
+      "migCodigo": 0,
+      "apiInicio": 2453,
+      "apiSana": 4686
+    },
+    {
+      "up": 0,
+      "total": 6740,
+      "pgSano": 2256,
+      "migInicio": 2714,
+      "migFin": 2928,
+      "migCodigo": 0,
+      "apiInicio": 3418,
+      "apiSana": 5666
+    },
+    {
+      "up": 0,
+      "total": 5636,
+      "pgSano": 1206,
+      "migInicio": 1701,
+      "migFin": 1895,
+      "migCodigo": 0,
+      "apiInicio": 2374,
+      "apiSana": 4598
+    }
+  ],
+  "up3": {
+    "code": 1,
+    "salida": " Container s08-docker-migrate-1 Waiting \n Container s08-docker-migrate-1 Error service \"migrate\" didn't complete successfully: exit 1\nservice \"migrate\" didn't complete successfully: exit 1"
+  },
+  "mi3": {
+    "existe": true,
+    "estado": "exited",
+    "codigo": 1,
+    "inicio": 1792868790271,
+    "fin": 1792868790491,
+    "sano": null
+  },
+  "api3": {
+    "existe": true,
+    "estado": "created",
+    "codigo": 0,
+    "inicio": null,
+    "fin": null,
+    "sano": null
+  }
+}

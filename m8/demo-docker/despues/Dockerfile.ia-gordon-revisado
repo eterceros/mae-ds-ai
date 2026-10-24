@@ -1,0 +1,38 @@
+# DESPUES (escenario K7): el Dockerfile de Gordon (antes/Dockerfile.ia-gordon) revisado a mano
+# despues de leer hadolint y Trivy y de probarlo como en K3. Se mantiene su estructura.
+
+# CORRECCIÓN: etiqueta exacta + digest en lugar de "node:24-alpine" (flotante):
+# el build no cambia si alguien vuelve a publicar la etiqueta.
+FROM node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS build
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+# CORRECCIÓN: --ignore-scripts: no ejecuta scripts de instalacion de terceros
+# (este proyecto no los necesita).
+RUN npm ci --ignore-scripts
+
+COPY tsconfig.json tsconfig.build.json ./
+COPY src ./src
+RUN npm run build
+
+# CORRECCIÓN: las dependencias de produccion se resuelven en su propia etapa
+# y la imagen final solo las copia (no queda npm trabajando en la etapa final).
+FROM node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS prod-deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+
+FROM node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS production
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=prod-deps /app/node_modules ./node_modules
+# CORRECCIÓN: sin --chown=node:node. El codigo queda de root y el proceso
+# (usuario node) puede leerlo pero no reescribirlo (ver K3).
+COPY --from=build /app/dist ./dist
+COPY package.json ./
+
+ENV PORT=3000
+EXPOSE 3000
+USER node
+
+CMD ["node", "dist/main.js"]

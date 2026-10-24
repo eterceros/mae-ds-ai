@@ -1,0 +1,30 @@
+# DESPUES, para desarrollo (no medido). Se combina con el base, desde despues/:
+#   docker compose -f compose.yaml -f compose.dev.yaml watch
+# develop.watch copia api/src/ al contenedor al guardar y la API se recompila
+# y reinicia; si cambia package.json, reconstruye la imagen. Usa la etapa
+# "build" del Dockerfile (tiene TypeScript), corre como root solo en desarrollo.
+# Nota: si este archivo se llamara compose.override.yaml, Compose lo cargaria
+# solo, sin -f. Aqui se deja con otro nombre para que los escenarios midan
+# exactamente compose.yaml.
+services:
+  migrate:
+    build:
+      context: ../api
+      dockerfile: ../despues/Dockerfile
+      target: build
+    image: s08-docker/api:dev
+  api:
+    build:
+      context: ../api
+      dockerfile: ../despues/Dockerfile
+      target: build
+    image: s08-docker/api:dev
+    user: root
+    command: ["sh", "-c", "npx tsc -p tsconfig.build.json --watch --preserveWatchOutput & node --watch dist/main.js"]
+    develop:
+      watch:
+        - action: sync
+          path: ../api/src
+          target: /app/src
+        - action: rebuild
+          path: ../api/package.json

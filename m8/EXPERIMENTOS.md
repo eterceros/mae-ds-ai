@@ -9,8 +9,11 @@ Este archivo reúne en un solo lugar las demos medidas del módulo y sus resulta
 | [`demo-rest-graphql-grpc/`](demo-rest-graphql-grpc/) | 5 | ¿Cuándo conviene REST, GraphQL o gRPC sobre el mismo servicio? | ≈ 37-46 min (más `payloads` y `codec`) | [7 archivos](#1-rest-graphql-y-grpc-sobre-el-mismo-servicio-sesión-5) |
 | [`demo-migraciones/`](demo-migraciones/) | 6 | ¿Qué migraciones de esquema cortan el servicio y cómo hacerlas sin cortarlo? | ≈ 95 min (≈ 30 min con `RONDAS=1`) | [3 archivos](#2-migraciones-de-esquema-sin-cortar-el-servicio-sesión-6) |
 | [`demo-cache/`](demo-cache/) | 6 | ¿Cuándo ayuda una caché (Redis/Valkey), cuándo basta un índice y qué problemas trae? | ≈ 23 min | [5 archivos](#3-caché-con-postgres-redis-y-valkey-sesión-6) |
+| [`demo-docker/`](demo-docker/) | 8 | ¿Qué cambia en tamaño, CVE, privilegios, secretos y arranque al corregir un Dockerfile y un Compose escritos con apuro? | ver el [README de la demo](demo-docker/README.md) (K1-K7) | [7 archivos](#4-docker-y-compose-antes-y-después-sesión-8) |
+| [`demo-resiliencia/`](demo-resiliencia/) | 8 | ¿Qué protecciones en el código de una llamada (timeout, reintentos, breaker, bulkhead) evitan que un servicio lento o caído arrastre al que lo llama? | ≈ 30 min (`npm run medir`) | [1 archivo](#5-resiliencia-en-el-código-de-una-llamada-sesión-8) |
+| [`demo-mensajeria/`](demo-mensajeria/) | 8 | ¿Qué se pierde o se duplica entre Postgres y RabbitMQ, y cómo se evita (outbox, idempotencia, DLQ, cola para el LLM)? | ≈ 50 min (Q7 ≈ 30 min) | [7 archivos](#6-mensajería-con-postgres-y-rabbitmq-sesión-8) |
 
-**Advertencia común a las tres:** cada demo se midió en **una sola máquina** (un portátil con Intel Core i9-12900H, 20 hilos lógicos, 64 GB de RAM, Windows 11), con cliente y servidores juntos. Úsenlas como orden de magnitud y para ver **qué** cambia y **por qué**, no como cifras absolutas: en otro hardware, o con una red real entre máquinas, los números cambian y a veces también el orden.
+**Advertencia común:** cada demo se midió en **una sola máquina** (un portátil con Intel Core i9-12900H, 20 hilos lógicos, 64 GB de RAM, Windows 11), con cliente y servidores juntos. Úsenlas como orden de magnitud y para ver **qué** cambia y **por qué**, no como cifras absolutas: en otro hardware, o con una red real entre máquinas, los números cambian y a veces también el orden.
 
 ---
 
@@ -238,3 +241,136 @@ npm run down          # borra contenedores y datos
 [`C7_OBSOLETOS.md`](demo-cache/results/C7_OBSOLETOS.md) ·
 [`C8_ESTRUCTURAS.md`](demo-cache/results/C8_ESTRUCTURAS.md) ·
 [`C9_EXPULSION.md`](demo-cache/results/C9_EXPULSION.md)
+
+
+---
+
+## 4. Docker y Compose, antes y después (sesión 8)
+
+Carpeta: [`demo-docker/`](demo-docker/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md)
+
+### Qué pregunta responde
+
+¿Cuánto mejoran la imagen y el arranque de una API NestJS (que lee Postgres) al pasar de un Dockerfile y un Compose «como salen con apuro o de una IA sin revisar» (`antes/`) a su versión corregida (`despues/`)? Cada corrección está comentada con `# CORRECCIÓN:` en el código.
+
+### Cifras principales
+
+De [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md) (24 de octubre de 2026):
+
+| Escenario | De `antes/` a `despues/` |
+|---|---|
+| K1. Multi-stage y orden de capas | 1,74 GB → 357 MB en disco; rebuild tras cambiar `src/main.ts`: 9,4 s → 2,4 s |
+| K2. Base | 4641 CVE (21 críticas) con `node:24` → 245 (1 crítica) con slim; 16 con Alpine; 32 con distroless o Docker Hardened Image |
+| K3. Usuario | uid 0 → 1000; 14 → 0 capacidades efectivas |
+| K4. Secretos | token visible en `docker history`: sí → no; hallazgos en las capas: 3 → 0 |
+| K5. Healthcheck | con volumen vacío, la API arrancó bien en 0 de 5 → 5 de 5 |
+| K6. Migraciones como servicio | orden garantizado en 3 de 3; con una migración rota, la API no arranca |
+| K7. Dockerfile generado por IA | el de un modelo local chico no construye; el de Gordon construye pero el proceso puede reescribir su propio código, y hadolint no lo marca |
+
+### Para qué les sirve
+
+- **Actividad 7 (`compose.yaml`):** `despues/compose.yaml` es el modelo de healthcheck, `depends_on` con condición y migraciones como servicio.
+- **Laboratorio de la S08:** [`laboratorio-s08/`](laboratorio-s08/) (auditar/adelgazar la imagen o Podman; entregable `docs/laboratorios/imagen-o-podman.md`, domingo 1 de noviembre, 23:59). La demo es material de apoyo para comparar, no para copiar.
+
+### Advertencias
+
+- Una sola máquina (la indicada arriba). El escenario con Podman (K8) todavía no tiene resultados publicados.
+- El `Dockerfile` de Spring Boot de `despues/spring/` es una plantilla no medida.
+
+### Archivos de resultados
+
+[`K1_MULTISTAGE.md`](demo-docker/results/K1_MULTISTAGE.md) ·
+[`K2_BASES.md`](demo-docker/results/K2_BASES.md) ·
+[`K3_USUARIO.md`](demo-docker/results/K3_USUARIO.md) ·
+[`K4_SECRETOS.md`](demo-docker/results/K4_SECRETOS.md) ·
+[`K5_HEALTHCHECK.md`](demo-docker/results/K5_HEALTHCHECK.md) ·
+[`K6_MIGRACIONES.md`](demo-docker/results/K6_MIGRACIONES.md) ·
+[`K7_IA.md`](demo-docker/results/K7_IA.md)
+
+---
+
+## 5. Resiliencia en el código de una llamada (sesión 8)
+
+Carpeta: [`demo-resiliencia/`](demo-resiliencia/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-resiliencia/DIFERENCIAS.md)
+
+**Referencia para el experimento E3 (resiliencia), que se entrega el lunes 9 de noviembre.**
+
+### Qué pregunta responde
+
+Un servicio A llama a un servicio B; con Toxiproxy se hace que B tarde, se cuelgue o cierre el puerto. ¿Qué le pasa a A sin protección (`src/antes/`) y con cada protección escrita en el código (`src/despues/`): timeout, reintentos con backoff y *jitter*, circuit breaker (opossum 10) y bulkhead?
+
+### Cifras principales
+
+Medianas de 3 corridas, de [`ESCENARIOS.md`](demo-resiliencia/results/ESCENARIOS.md) (50 peticiones/s durante 30 s; 20 % de las llamadas a B afectadas en R1-R3):
+
+| Escenario | Variante | Resultado |
+|---|---|---|
+| R1, B colgado | sin protección | p95 10001 ms; 20,2 % de errores; 301 llamadas colgadas al terminar |
+| R2, B colgado | timeout de 300 ms | p95 301 ms; 21,1 % de errores (rápidos); 0 colgadas |
+| R3, B colgado | timeout + 2 reintentos con backoff y *jitter* | p95 349 ms; 0,7 % de errores; 1,24 llamadas a B por petición |
+| R4, 50 peticiones tras un 503 | sin espera / sin *jitter* / *jitter* completo | máx. de reintentos que llegan a B en 50 ms: 83 / 50 / 19 |
+| R5, B colgado 10 s | sin breaker / breaker (ventana de 2 s) | llamadas de A a B durante la falla: 500 / 74 |
+| R6, ruta lenta + ruta sana | sin bulkhead / con bulkhead (límite 10) | errores de la ruta sana: 95,7 % / 0,0 % |
+
+### Conclusión
+
+- **Sin plazo, la lentitud de B se vuelve la de A** y una conexión colgada no termina nunca; el timeout lo acota a cambio de errores rápidos.
+- **Los reintentos convierten esos errores en éxitos** (solo si la operación es idempotente), pero sin espera ni *jitter* los clientes golpean juntos a un B que se está recuperando.
+- **El breaker y el bulkhead protegen a B y a las rutas sanas de A** de una dependencia mala.
+
+### Advertencias
+
+- Una sola máquina, red de Docker Desktop y fallas inyectadas; los parámetros (300 ms, 2 reintentos, límite 10) son ejemplos, no recomendaciones.
+- El fragmento de Spring (`spring/ClienteB.java`) no está medido.
+
+### Archivos de resultados
+
+[`ESCENARIOS.md`](demo-resiliencia/results/ESCENARIOS.md) · datos crudos en [`results/raw/`](demo-resiliencia/results/raw/)
+
+---
+
+## 6. Mensajería con Postgres y RabbitMQ (sesión 8)
+
+Carpeta: [`demo-mensajeria/`](demo-mensajeria/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-mensajeria/DIFERENCIAS.md)
+
+**Referencia para el experimento E4 (mensajería, incluye un LLM local con Docker Model Runner), que se entrega el lunes 9 de noviembre.**
+
+### Qué pregunta responde
+
+Una API de pedidos avisa a otro servicio por RabbitMQ 4.4. Matando procesos de verdad en el punto crítico y contando mensajes uno por uno: ¿qué se pierde y qué se duplica con la doble escritura y con un consumidor sin idempotencia (`src/antes/`), y qué cambia con outbox, idempotencia, reintentos limitados y DLQ (`src/despues/`)? Q7 es el caso del E4: llamar a un LLM local dentro de la petición frente a `202` + cola + worker.
+
+### Cifras principales
+
+De [`ESCENARIOS.md`](demo-mensajeria/results/ESCENARIOS.md) (24 de octubre de 2026; 3 corridas):
+
+| Escenario | Resultado |
+|---|---|
+| Q1, doble escritura; la API muere 10 veces en 1000 pedidos | 10 eventos perdidos (`COMMIT` → `publish`) o 10 eventos fantasma (`publish` → `COMMIT`) |
+| Q2, outbox + 2 relays con `SKIP LOCKED` | 0 perdidos, 0 fantasma; 142-172 duplicados («al menos una vez») |
+| Q3 / Q4, consumidor sin / con tabla de procesados | 296-407 envíos duplicados por cada 1000 pedidos / 0 |
+| Q5, mensaje venenoso | `reject(requeue=true)`: 4 intentos y a la DLQ; `nack(requeue=true)`: 1618-3057 intentos en 10 s y nunca llega a la DLQ |
+| Q6, reintento con retardo | nativo de quorum queues, `x-opt-delivery-time` y DLX + TTL cumplen el plan con error de decenas de ms; el TTL por mensaje bloquea la cabeza de la cola |
+| Q7 (E4), síncrono a 20 pet/s | 383-395 de ~476 peticiones con 504; p95 de 10 s |
+| Q7 (E4), `202` + cola + worker a 20 pet/s | 600/600 con `202` (mediana 3 ms) y 600/600 hechos; al matar el worker, 0 perdidos |
+| Q8, AsyncAPI 3.1 | `asyncapi diff` no marca como incompatible renombrar un campo obligatorio (0 *breaking*); validar mensajes reales contra el esquema sí lo detecta (0/200 válidos) |
+
+### Conclusión
+
+- **Postgres y RabbitMQ no comparten transacción:** la outbox evita perder eventos pero da «al menos una vez»; la idempotencia del consumidor evita los duplicados.
+- **Cómo se dice «falló» importa:** en RabbitMQ 4.4 solo `reject(requeue=true)` cuenta para el límite de entregas.
+- **Con un LLM lento, una cola absorbe la carga** que de otro modo termina en timeouts en cascada, a cambio de latencia hasta el resultado.
+
+### Máquina, versiones y advertencias
+
+- Una sola máquina. Docker Model Runner usó llama.cpp **en CPU** con `ai/smollm2` (256 MiB); con GPU cambian las cifras absolutas de Q7, no el mecanismo. Para Q7 hay que activar Model Runner y descargar el modelo (ver los [requisitos de la demo](demo-mensajeria/README.md#requisitos)).
+- No se midió el rendimiento máximo de RabbitMQ, del relay ni del worker.
+
+### Archivos de resultados
+
+[`ESCENARIOS.md`](demo-mensajeria/results/ESCENARIOS.md) ·
+[`Q1-Q2_OUTBOX.md`](demo-mensajeria/results/Q1-Q2_OUTBOX.md) ·
+[`Q3-Q4_IDEMPOTENCIA.md`](demo-mensajeria/results/Q3-Q4_IDEMPOTENCIA.md) ·
+[`Q5_VENENOSO.md`](demo-mensajeria/results/Q5_VENENOSO.md) ·
+[`Q6_RETARDO.md`](demo-mensajeria/results/Q6_RETARDO.md) ·
+[`Q7_E4_LLM.md`](demo-mensajeria/results/Q7_E4_LLM.md) ·
+[`Q8_ASYNCAPI.md`](demo-mensajeria/results/Q8_ASYNCAPI.md)

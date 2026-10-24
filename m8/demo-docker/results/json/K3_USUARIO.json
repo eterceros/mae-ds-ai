@@ -1,0 +1,46 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T19:20:09.724Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop sobre WSL2, VM con 20 CPU y 31 GB, almacén de imágenes containerd"
+  },
+  "filas": [
+    {
+      "id": "root",
+      "nombre": "Ingenua (sin USER: root)",
+      "dockerfile": "antes/Dockerfile",
+      "img": "s08-docker/k3-root",
+      "ok": true,
+      "idOut": "uid=0(root) gid=0(root) groups=0(root)",
+      "ps": "root 1 npm run start                     \nroot 18 sh -c node dist/main.js \nroot 19 node dist/main.js ",
+      "capHex": "00000000a80425fb",
+      "caps": 14,
+      "escribeCodigo": "sí",
+      "escribeEtc": "sí",
+      "escribeBin": "sí",
+      "comoRoot": "root"
+    },
+    {
+      "id": "noroot",
+      "nombre": "Referencia (USER node)",
+      "dockerfile": "despues/Dockerfile",
+      "img": "s08-docker/k3-noroot",
+      "ok": true,
+      "idOut": "uid=1000(node) gid=1000(node) groups=1000(node)",
+      "ps": "node 1 node dist/main.js ",
+      "capHex": "0000000000000000",
+      "caps": 0,
+      "escribeCodigo": "no (permiso denegado)",
+      "escribeEtc": "no (permiso denegado)",
+      "escribeBin": "no (permiso denegado)",
+      "comoRoot": "root"
+    }
+  ]
+}

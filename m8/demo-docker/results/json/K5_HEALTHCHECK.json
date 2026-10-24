@@ -1,0 +1,224 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T19:01:13.410Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop sobre WSL2, VM con 20 CPU y 31 GB, almacén de imágenes containerd"
+  },
+  "res": {
+    "sin": {
+      "nuevo": [
+        {
+          "ok": false,
+          "ms": 2237,
+          "salida": "1",
+          "error": "No se pudo arrancar la API: connect ECONNREFUSED 172.23.0.2:5432",
+          "apiTrasPostgresMs": 219,
+          "pgSanoMs": null
+        },
+        {
+          "ok": false,
+          "ms": 2224,
+          "salida": "1",
+          "error": "No se pudo arrancar la API: connect ECONNREFUSED 172.23.0.2:5432",
+          "apiTrasPostgresMs": 202,
+          "pgSanoMs": null
+        },
+        {
+          "ok": false,
+          "ms": 2030,
+          "salida": "1",
+          "error": "No se pudo arrancar la API: connect ECONNREFUSED 172.23.0.2:5432",
+          "apiTrasPostgresMs": 204,
+          "pgSanoMs": null
+        },
+        {
+          "ok": false,
+          "ms": 1999,
+          "salida": "1",
+          "error": "No se pudo arrancar la API: connect ECONNREFUSED 172.23.0.2:5432",
+          "apiTrasPostgresMs": 196,
+          "pgSanoMs": null
+        },
+        {
+          "ok": false,
+          "ms": 1981,
+          "salida": "1",
+          "error": "No se pudo arrancar la API: connect ECONNREFUSED 172.23.0.2:5432",
+          "apiTrasPostgresMs": 199,
+          "pgSanoMs": null
+        }
+      ],
+      "existente": [
+        {
+          "ok": true,
+          "ms": 1223,
+          "apiTrasPostgresMs": 200,
+          "pgSanoMs": null
+        },
+        {
+          "ok": true,
+          "ms": 1089,
+          "apiTrasPostgresMs": 204,
+          "pgSanoMs": null
+        },
+        {
+          "ok": true,
+          "ms": 1456,
+          "apiTrasPostgresMs": 220,
+          "pgSanoMs": null
+        },
+        {
+          "ok": true,
+          "ms": 1436,
+          "apiTrasPostgresMs": 190,
+          "pgSanoMs": null
+        },
+        {
+          "ok": true,
+          "ms": 1366,
+          "apiTrasPostgresMs": 317,
+          "pgSanoMs": null
+        }
+      ]
+    },
+    "socket": {
+      "nuevo": [
+        {
+          "ok": true,
+          "ms": 3667,
+          "apiTrasPostgresMs": 2699,
+          "pgSanoMs": 2253
+        },
+        {
+          "ok": true,
+          "ms": 2713,
+          "apiTrasPostgresMs": 1693,
+          "pgSanoMs": 1204
+        },
+        {
+          "ok": true,
+          "ms": 3050,
+          "apiTrasPostgresMs": 1691,
+          "pgSanoMs": 1190
+        },
+        {
+          "ok": true,
+          "ms": 2935,
+          "apiTrasPostgresMs": 1705,
+          "pgSanoMs": 1203
+        },
+        {
+          "ok": true,
+          "ms": 2672,
+          "apiTrasPostgresMs": 1713,
+          "pgSanoMs": 1212
+        }
+      ],
+      "existente": [
+        {
+          "ok": true,
+          "ms": 2639,
+          "apiTrasPostgresMs": 1721,
+          "pgSanoMs": 1214
+        },
+        {
+          "ok": true,
+          "ms": 2696,
+          "apiTrasPostgresMs": 1686,
+          "pgSanoMs": 1202
+        },
+        {
+          "ok": true,
+          "ms": 2588,
+          "apiTrasPostgresMs": 1697,
+          "pgSanoMs": 1194
+        },
+        {
+          "ok": true,
+          "ms": 2999,
+          "apiTrasPostgresMs": 1698,
+          "pgSanoMs": 1200
+        },
+        {
+          "ok": true,
+          "ms": 2866,
+          "apiTrasPostgresMs": 1723,
+          "pgSanoMs": 1230
+        }
+      ]
+    },
+    "tcp": {
+      "nuevo": [
+        {
+          "ok": true,
+          "ms": 4687,
+          "apiTrasPostgresMs": 3461,
+          "pgSanoMs": 2316
+        },
+        {
+          "ok": true,
+          "ms": 4126,
+          "apiTrasPostgresMs": 2395,
+          "pgSanoMs": 1219
+        },
+        {
+          "ok": true,
+          "ms": 5044,
+          "apiTrasPostgresMs": 3477,
+          "pgSanoMs": 2364
+        },
+        {
+          "ok": true,
+          "ms": 3725,
+          "apiTrasPostgresMs": 2398,
+          "pgSanoMs": 1224
+        },
+        {
+          "ok": true,
+          "ms": 3462,
+          "apiTrasPostgresMs": 2377,
+          "pgSanoMs": 1206
+        }
+      ],
+      "existente": [
+        {
+          "ok": true,
+          "ms": 3572,
+          "apiTrasPostgresMs": 2408,
+          "pgSanoMs": 1225
+        },
+        {
+          "ok": true,
+          "ms": 4189,
+          "apiTrasPostgresMs": 2470,
+          "pgSanoMs": 1265
+        },
+        {
+          "ok": true,
+          "ms": 3881,
+          "apiTrasPostgresMs": 2434,
+          "pgSanoMs": 1217
+        },
+        {
+          "ok": true,
+          "ms": 3885,
+          "apiTrasPostgresMs": 2400,
+          "pgSanoMs": 1213
+        },
+        {
+          "ok": true,
+          "ms": 3513,
+          "apiTrasPostgresMs": 2396,
+          "pgSanoMs": 1202
+        }
+      ]
+    }
+  }
+}

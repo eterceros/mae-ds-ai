@@ -1,0 +1,5 @@
+[
+  { "name": "b",        "listen": "0.0.0.0:8666", "upstream": "b:3001", "enabled": true },
+  { "name": "b_lento",  "listen": "0.0.0.0:8667", "upstream": "b:3001", "enabled": true },
+  { "name": "b_rapido", "listen": "0.0.0.0:8668", "upstream": "b:3001", "enabled": true }
+]

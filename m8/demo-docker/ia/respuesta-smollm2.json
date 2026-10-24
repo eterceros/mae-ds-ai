@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "length",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```dockerfile\nFROM nest:v2.10.0\n\n# Install dependencies\nRUN npm install -g @nestjs/cli @nestjs/cli@v2.10.0\n\n# Configure environment variables\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nestjs/cli@v2.10.0 --save-dev\n\n# Configure PostgreSQL\nRUN npm install -g @nest"
+      }
+    }
+  ],
+  "created": 1792868387,
+  "model": "C:\\Users\\edson\\.docker\\models\\bundles\\sha256\\354bf30d0aa3af413d2aa5ae4f23c66d78980072d1e07a5b0d776e9606a2f0b9\\model\\model.gguf",
+  "system_fingerprint": "b1-72874f5",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 700,
+    "prompt_tokens": 155,
+    "total_tokens": 855,
+    "prompt_tokens_details": {
+      "cached_tokens": 24
+    }
+  },
+  "id": "chatcmpl-fB3eQAlFsMKvuNojmngnBalivkGZLEQD",
+  "timings": {
+    "cache_n": 24,
+    "prompt_n": 131,
+    "prompt_ms": 40.452,
+    "prompt_per_token_ms": 0.30879389312977096,
+    "prompt_per_second": 3238.4060120636805,
+    "predicted_n": 700,
+    "predicted_ms": 11346.203,
+    "predicted_per_token_ms": 16.208861428571428,
+    "predicted_per_second": 61.69464798047418
+  }
+}

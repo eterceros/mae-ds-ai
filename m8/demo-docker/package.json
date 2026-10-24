@@ -1,0 +1,21 @@
+{
+  "name": "demo-docker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S08): Docker y Compose antes/despues, con mediciones (tamaño, cache, bases, root, secretos, healthcheck, migraciones, Dockerfile generado por IA). Los scripts solo usan la stdlib de Node.",
+  "scripts": {
+    "up": "docker compose -f despues/compose.yaml up -d --wait",
+    "down": "docker compose -f despues/compose.yaml down -v",
+    "k1": "node scripts/k1-multistage.mjs",
+    "k2": "node scripts/k2-bases.mjs",
+    "k3": "node scripts/k3-usuario.mjs",
+    "k4": "node scripts/k4-secretos.mjs",
+    "k5": "node scripts/k5-healthcheck.mjs",
+    "k6": "node scripts/k6-migraciones.mjs",
+    "k7": "node scripts/k7-ia.mjs",
+    "k8": "node scripts/k8-podman.mjs",
+    "todo": "npm run k1 && npm run k2 && npm run k3 && npm run k4 && npm run k5 && npm run k6 && npm run k7 && npm run down",
+    "limpiar": "node scripts/limpiar.mjs"
+  }
+}

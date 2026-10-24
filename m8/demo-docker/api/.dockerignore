@@ -1,0 +1,9 @@
+# Lo que no debe viajar al contexto de build (ni terminar en la imagen).
+# Lo usa despues/Dockerfile (y bases/Dockerfile). Los Dockerfiles de antes/
+# tienen su propio <Dockerfile>.dockerignore vacio a proposito.
+node_modules
+dist
+.env
+.env.*
+*.log
+.git

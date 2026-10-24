@@ -1,0 +1,102 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T18:31:52.507Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop, 20 CPU, 33499774976 B de RAM, almacen overlayfs"
+  },
+  "filas": [
+    {
+      "id": "ingenuo",
+      "nombre": "Ingenua (node:24, una etapa, COPY . . antes de npm install)",
+      "dockerfile": "docker/Dockerfile.ingenuo",
+      "t": {
+        "disco": "1.74GB",
+        "contenido": "429MB",
+        "bytes": 1735778287,
+        "capas": 12
+      },
+      "c": {
+        "deps": "166",
+        "nm_mb": "65",
+        "ts": "si",
+        "cli": "si",
+        "src": "si",
+        "npmcache_mb": "14",
+        "user": "root"
+      },
+      "user": "root (vacio)",
+      "r": {
+        "frio": [
+          8747.0496,
+          8661.4401,
+          9094.268
+        ],
+        "igual": [
+          701.3676,
+          884.8995,
+          642.062
+        ],
+        "cambio": [
+          8558.1609,
+          9656.2301,
+          9416.2034
+        ],
+        "reinstaloCambio": [
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "id": "multistage",
+      "nombre": "Multi-stage de referencia (slim, package*.json primero)",
+      "dockerfile": "Dockerfile",
+      "t": {
+        "disco": "357MB",
+        "contenido": "83.4MB",
+        "bytes": 357200189,
+        "capas": 10
+      },
+      "c": {
+        "deps": "102",
+        "nm_mb": "24",
+        "ts": "no",
+        "cli": "no",
+        "src": "no",
+        "npmcache_mb": "0",
+        "user": "root"
+      },
+      "user": "node",
+      "r": {
+        "frio": [
+          7255.5857,
+          8188.2713,
+          8442.2119
+        ],
+        "igual": [
+          692.1609,
+          734.239,
+          759.8948
+        ],
+        "cambio": [
+          2087.2786,
+          2370.4882,
+          2640.6766
+        ],
+        "reinstaloCambio": [
+          false,
+          false,
+          false
+        ]
+      }
+    }
+  ]
+}

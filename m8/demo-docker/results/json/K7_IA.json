@@ -1,0 +1,246 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T19:20:50.793Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop sobre WSL2, VM con 20 CPU y 31 GB, almacén de imágenes containerd"
+  },
+  "filas": [
+    {
+      "id": "smollm2",
+      "nombre": "IA local: ai/smollm2 (sin revisar)",
+      "ruta": "antes/Dockerfile.ia-smollm2",
+      "h": {
+        "codigo": 1,
+        "lineas": [
+          "línea 6 DL3016 warning: Pin versions in npm. Instead of `npm install <package>` use `npm install <package>@<version>`",
+          "línea 9 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 12 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 15 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 18 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 21 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 24 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 27 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 30 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 33 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 36 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 39 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 42 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 45 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 48 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 51 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 54 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 57 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 60 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 63 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.",
+          "línea 66 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation."
+        ]
+      },
+      "tc": [
+        "DS-0002 (HIGH): Image user should not be 'root'",
+        "DS-0026 (LOW): No HEALTHCHECK defined"
+      ],
+      "construye": false,
+      "errorBuild": "ERROR: failed to build: failed to solve: nest:v2.10.0: failed to resolve source metadata for docker.io/library/nest:v2.10.0: pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed"
+    },
+    {
+      "id": "gordon",
+      "nombre": "Gordon (sin revisar)",
+      "ruta": "antes/Dockerfile.ia-gordon",
+      "h": {
+        "codigo": 1,
+        "lineas": [
+          "línea 24 DL3066 info: Non-numeric user-id may not be resolvable by host system"
+        ]
+      },
+      "tc": [
+        "DS-0026 (LOW): No HEALTHCHECK defined"
+      ],
+      "construye": true,
+      "errorBuild": null,
+      "t": {
+        "disco": "274MB",
+        "contenido": "65.4MB",
+        "bytes": 273816484,
+        "capas": 8
+      },
+      "usuario": "node",
+      "arranca": true,
+      "escribeCodigo": true,
+      "trivy": {
+        "total": 16,
+        "CRITICAL": 0,
+        "HIGH": 6,
+        "MEDIUM": 9,
+        "LOW": 1,
+        "UNKNOWN": 0,
+        "corregibles": 15,
+        "so": 0,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 19,
+        "sistema": "alpine 3.24.3"
+      },
+      "scout": {
+        "C": 0,
+        "H": 6,
+        "M": 9,
+        "L": 1
+      }
+    },
+    {
+      "id": "gordon-revisado",
+      "nombre": "Gordon, revisado a mano",
+      "ruta": "despues/Dockerfile.ia-gordon-revisado",
+      "h": {
+        "codigo": 1,
+        "lineas": [
+          "línea 36 DL3066 info: Non-numeric user-id may not be resolvable by host system"
+        ]
+      },
+      "tc": [
+        "DS-0026 (LOW): No HEALTHCHECK defined"
+      ],
+      "construye": true,
+      "errorBuild": null,
+      "t": {
+        "disco": "270MB",
+        "contenido": "64.8MB",
+        "bytes": 270401990,
+        "capas": 8
+      },
+      "usuario": "node",
+      "arranca": true,
+      "escribeCodigo": false,
+      "trivy": {
+        "total": 16,
+        "CRITICAL": 0,
+        "HIGH": 6,
+        "MEDIUM": 9,
+        "LOW": 1,
+        "UNKNOWN": 0,
+        "corregibles": 15,
+        "so": 0,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 19,
+        "sistema": "alpine 3.24.3"
+      },
+      "scout": {
+        "C": 0,
+        "H": 6,
+        "M": 9,
+        "L": 1
+      }
+    },
+    {
+      "id": "ingenuo",
+      "nombre": "Ingenuo de K1",
+      "ruta": "antes/Dockerfile",
+      "h": {
+        "codigo": 1,
+        "lineas": [
+          "línea 17 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation."
+        ]
+      },
+      "tc": [
+        "DS-0002 (HIGH): Image user should not be 'root'",
+        "DS-0026 (LOW): No HEALTHCHECK defined"
+      ],
+      "construye": true,
+      "errorBuild": null,
+      "t": {
+        "disco": "1.74GB",
+        "contenido": "429MB",
+        "bytes": 1735738325,
+        "capas": 12
+      },
+      "usuario": "root",
+      "arranca": true,
+      "escribeCodigo": true,
+      "trivy": {
+        "total": 4641,
+        "CRITICAL": 21,
+        "HIGH": 618,
+        "MEDIUM": 2076,
+        "LOW": 1760,
+        "UNKNOWN": 166,
+        "corregibles": 26,
+        "so": 4625,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 413,
+        "sistema": "debian 12.15"
+      },
+      "scout": {
+        "C": 3,
+        "H": 57,
+        "M": 85,
+        "L": 245
+      }
+    },
+    {
+      "id": "referencia",
+      "nombre": "Referencia (despues/Dockerfile)",
+      "ruta": "despues/Dockerfile",
+      "h": {
+        "codigo": 1,
+        "lineas": [
+          "línea 45 DL3066 info: Non-numeric user-id may not be resolvable by host system"
+        ]
+      },
+      "tc": [
+        "DS-0026 (LOW): No HEALTHCHECK defined"
+      ],
+      "construye": true,
+      "errorBuild": null,
+      "t": {
+        "disco": "357MB",
+        "contenido": "83.4MB",
+        "bytes": 357200343,
+        "capas": 10
+      },
+      "usuario": "node",
+      "arranca": true,
+      "escribeCodigo": false,
+      "trivy": {
+        "total": 245,
+        "CRITICAL": 1,
+        "HIGH": 62,
+        "MEDIUM": 96,
+        "LOW": 84,
+        "UNKNOWN": 2,
+        "corregibles": 16,
+        "so": 229,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 88,
+        "sistema": "debian 12.15"
+      },
+      "scout": {
+        "C": 0,
+        "H": 14,
+        "M": 13,
+        "L": 39
+      }
+    }
+  ]
+}

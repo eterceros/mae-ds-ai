@@ -1,0 +1,103 @@
+# Demo de mensajería (M8, S08). Solo escucha en 127.0.0.1 y en puertos 18300-18399.
+# Base:  docker compose up -d --wait postgres rabbitmq
+# E4:    docker compose --profile e4 up -d --build --wait     (API + worker en contenedores, con el LLM local)
+# Borrar todo (contenedores y datos): docker compose --profile e4 --profile load down -v
+name: s08-msg
+
+services:
+  postgres:
+    image: postgres:17.11
+    environment:
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: shop
+    ports: ["127.0.0.1:18332:5432"]
+    command: ["postgres", "-c", "max_connections=200"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "shop"]
+      interval: 2s
+      retries: 30
+
+  rabbitmq:
+    # 4.4.0 con la consola web (management). Versión fijada: el retardo nativo en quorum queues es de 4.3/4.4.
+    image: rabbitmq:4.4.0-management
+    hostname: rabbit-s08          # el nombre del nodo depende del hostname; fijarlo evita perder datos al recrear
+    environment:
+      RABBITMQ_DEFAULT_USER: demo
+      RABBITMQ_DEFAULT_PASS: demo
+    ports:
+      - "127.0.0.1:18372:5672"    # AMQP 0-9-1
+      - "127.0.0.1:18373:15672"   # consola web: http://127.0.0.1:18373 (demo/demo)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 3s
+      retries: 40
+
+  # ---------- E4 (Q7): IA síncrona (antes) frente a 202 + cola + worker (despues) ----------
+  llm-api-antes:
+    profiles: ["e4"]
+    build: .
+    command: ["node", "src/antes/llm-api.ts"]
+    environment:
+      PORT: "3000"
+      LLM_TIMEOUT_MS: "10000"
+    ports: ["127.0.0.1:18321:3000"]
+    models:
+      llm:
+        endpoint_var: LLM_URL
+        model_var: LLM_MODEL
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      retries: 30
+
+  llm-api:
+    profiles: ["e4"]
+    build: .
+    command: ["node", "src/despues/llm-api.ts"]
+    environment:
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/e4   # base propia de E4 (la crea scripts/q7-e4.ts)
+      AMQP_URL: amqp://demo:demo@rabbitmq:5672
+      PORT: "3000"
+    ports: ["127.0.0.1:18320:3000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    # Compose inyecta LLM_URL y LLM_MODEL (nombres elegidos con endpoint_var / model_var).
+    models:
+      llm:
+        endpoint_var: LLM_URL
+        model_var: LLM_MODEL
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      retries: 30
+
+  llm-worker:
+    profiles: ["e4"]
+    build: .
+    command: ["node", "src/despues/llm-worker.ts"]
+    environment:
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/e4   # base propia de E4 (la crea scripts/q7-e4.ts)
+      AMQP_URL: amqp://demo:demo@rabbitmq:5672
+      PREFETCH: "2"
+      LLM_TIMEOUT_MS: "30000"
+    stop_grace_period: 20s        # tiempo para el apagado limpio (SIGTERM) antes del SIGKILL
+    depends_on:
+      llm-api: { condition: service_healthy }
+    models:
+      llm:
+        endpoint_var: LLM_URL
+        model_var: LLM_MODEL
+
+  k6:
+    profiles: ["load"]
+    image: grafana/k6:2.3.0
+    volumes: ["./k6:/scripts:ro", "./results/raw:/out"]
+    environment:
+      SYNC_BASE_URL: http://llm-api-antes:3000   # src/antes/llm-api.ts
+      BASE_URL: http://llm-api:3000              # src/despues/llm-api.ts
+
+models:
+  llm:
+    model: ai/smollm2
+    context_size: 2048

@@ -1,0 +1,33 @@
+# ANTES (escenario K5, trampa): hay healthcheck y service_healthy, pero pg_isready sin -h
+# pregunta por el socket Unix. Durante la inicializacion de un volumen nuevo,
+# la imagen de Postgres levanta un servidor temporal solo por socket (para
+# crear la base y correr /docker-entrypoint-initdb.d), lo apaga y arranca el
+# definitivo. Si el chequeo cae en esa ventana, Postgres figura "healthy" y
+# luego se reinicia bajo los pies de la API.
+name: s08-docker
+services:
+  postgres:
+    image: docker.io/library/postgres:17.11@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe
+    environment:
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: tienda
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "tienda"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+  api:
+    image: s08-docker/api:local
+    environment:
+      PGHOST: postgres
+      PGPASSWORD: demo
+      PGDATABASE: tienda
+    ports: ["127.0.0.1:18100:3000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+volumes:
+  pgdata:

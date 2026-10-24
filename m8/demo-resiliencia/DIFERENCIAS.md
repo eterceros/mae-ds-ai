@@ -1,0 +1,28 @@
+# Antes y después: qué se corrigió y qué cambió en las cifras
+
+El cliente de B está escrito dos veces:
+
+- [`src/antes/cliente-b.ts`](src/antes/cliente-b.ts): lo que escribe alguien con apuro, o una IA a la que nadie le revisó el código. Una llamada sin plazo, un bucle que reintenta enseguida, sin circuit breaker y sin límite de concurrencia. Cada problema está marcado con `// PROBLEMA:`.
+- [`src/despues/`](src/despues/): las mismas llamadas, corregidas. Cada cambio está marcado con `// CORRECCIÓN:` y explica por qué. `cliente-b.ts` (plazo y reintentos), `breaker.ts` (opossum 10) y `bulkhead.ts` (limitador de concurrencia).
+
+Lo compartido queda fuera de las dos carpetas: el servidor y los contadores de A (`src/a.ts`), B (`src/b.ts`) y el GET con `node:http` (`src/http-get.ts`). Así, entre `antes/` y `despues/` lo único que cambia son las protecciones.
+
+Las cifras son medianas de 3 corridas, copiadas de [`results/ESCENARIOS.md`](results/ESCENARIOS.md) (allí están los rangos y las condiciones de cada escenario). Las líneas se refieren a la versión publicada de los archivos.
+
+| Problema | Línea en `antes/` | Cambio en `despues/` | Cifra medida |
+|---|---|---|---|
+| **La llamada no tiene plazo.** A espera lo que tarde B; si B no contesta nunca, la llamada queda abierta para siempre, aunque el cliente de A ya se haya ido | `cliente-b.ts:15`: `get(url, agent, undefined, …)` (equivale a `fetch(url)` sin `signal`) | `cliente-b.ts:12`: `AbortSignal.timeout(plazoMs)`, plazo **total** de la llamada | **R1→R2.** Con el 20 % de las llamadas lentas (2 s), el p95 baja de 2004 a 301 ms. Con el 20 % colgadas, A termina la corrida con **301 llamadas abiertas** a B (R1-colgado); con plazo, **0** (R2-colgado), y el p95 queda en 301 ms en vez de los 10 s en que k6 abandona |
+| **Con solo un timeout, el fallo pasajero llega al usuario.** El plazo convierte la espera en un error rápido, pero error al fin | (en `antes/` no hay plazo, así que tampoco hay error rápido que reintentar) | `cliente-b.ts:37-62`: `conReintentos` con 3 intentos, plazo de 300 ms cada uno | **R2→R3.** Errores del 19,3 % al 0,9 % (20 % de llamadas lentas). El precio: 1,26 llamadas a B por petición (B recibe 1889 en vez de 1500) y p95 de 301 a 352 ms |
+| **Reintenta enseguida, sin esperar.** Los que fallaron juntos vuelven a llamar juntos, y gastan todos sus intentos mientras B todavía no se recuperó | `cliente-b.ts:27-28` (el `catch` vuelve a llamar sin espera) | `cliente-b.ts:48-50`: backoff exponencial con tope (200, 400, 800, 1600, 2000 ms) | **R4.** B da 503 durante 1 s y llegan 50 peticiones juntas. Antes: **100 % de errores**, B recibe 300 llamadas en 200 ms (los 6 intentos se gastan en ~150 ms). Con backoff sin jitter: **0 % de errores**, 200 llamadas |
+| **Backoff sin jitter.** Con la misma espera para todos, los reintentos siguen llegando en ráfaga | (no hay espera) | `cliente-b.ts:51-57`: espera al azar (`'completo'` o `'igual'`) | **R4.** Máximo de reintentos que llegan a B en 50 ms: 50 sin jitter (todos juntos, cuatro veces), 19 con jitter completo, 28 con jitter «igual». El jitter completo cuesta algo: 2,0 % de errores (algunos agotan sus intentos antes de que B vuelva) y 254 llamadas a B en vez de 200; el «igual» da 0 % y 219 |
+| **Reintenta cualquier operación**, sin preguntar si repetirla es seguro | `cliente-b.ts:29-30` | `cliente-b.ts:38-40`: `if (!o.idempotente) return fn(1)` | **No medido**: en la demo todas las llamadas son `GET`. Repetir un `POST` que sí llegó a B duplicaría el efecto |
+| **No hay circuit breaker.** Con B colgado, cada petición paga el plazo completo y sigue cargando a B | `cliente-b.ts:35-36` | `breaker.ts`: opossum 10, abre con más del 50 % de fallos (mínimo 10) en la ventana, 2 s abierto, una llamada de prueba | **R5, B colgado 10 s.** Sin breaker: p50 durante la falla 501 ms, 500 llamadas a B. Con breaker y ventana de 2 s: p50 **0,7 ms**, **74** llamadas. Con la ventana de 10 s (valor por omisión de opossum) abre recién a los 5,0 s y deja pasar 253. El precio: tras volver B, el circuito sigue abierto hasta la llamada de prueba, y el 9,8 % de las peticiones de esa fase fallan (0 % sin breaker) |
+| **No hay límite de concurrencia.** Una dependencia lenta ocupa todas las conexiones del pool que comparte con otra ruta sana | `cliente-b.ts:37-38` | `bulkhead.ts`: `LimiteConcurrencia(10)`, rechaza al instante la llamada 11 | **R6.** La ruta **rápida**, cuyo B está sano: errores del 95,7 % al **0,0 %** y p95 de 2502 a 3,9 ms. La ruta lenta, a cambio, rechaza el 83 % de sus peticiones en ~1 ms (751 de 901) |
+
+## Un detalle de Node que apareció al medir
+
+No es un error de `antes/`, sino de la primera versión de `despues/`, y por eso vale la pena contarlo: el plazo con `AbortSignal.timeout` **no era total** cuando la petición estaba esperando una conexión libre del pool. `node:http` destruye la petición al abortarse la señal, pero el error recién se emite cuando el pool le asigna un socket. En la primera prueba de R6 sin bulkhead (una sola corrida exploratoria, no incluida en los resultados), la ruta rápida tenía un p50 de **16,9 s** con un plazo de 2,5 s. La corrección está en el código compartido, [`src/http-get.ts:27`](src/http-get.ts): rechazar la promesa apenas se aborta la señal. Con eso, el p50 quedó en 2,5 s, que es el plazo. Moraleja: medir el timeout, no suponerlo.
+
+## Qué variantes son pasos intermedios
+
+Las rutas sin breaker de R5 (`/r5?breaker=0`) y sin bulkhead de R6 (`/r6/lento?bulkhead=0`) ya usan el plazo de `despues/`: son «después, sin esa corrección», para aislar el efecto de cada pieza. Lo mismo `/r4?jitter=ninguno`: backoff de `despues/` con el jitter apagado. Las únicas rutas que usan `antes/` son `/r1` y `/r4/antes`.

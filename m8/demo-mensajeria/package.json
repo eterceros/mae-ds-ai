@@ -1,0 +1,37 @@
+{
+  "name": "demo-mensajeria",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S08): mensajería con Postgres y RabbitMQ 4.4; doble escritura, outbox, consumidor idempotente, DLQ, reintento diferido, E4 con un LLM local (Docker Model Runner) y contrato AsyncAPI 3.1.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "up": "docker compose up -d --wait postgres rabbitmq",
+    "down": "docker compose --profile e4 --profile load down -v",
+    "q1-q2": "node --no-warnings scripts/q1-q2.ts",
+    "q3-q4": "node --no-warnings scripts/q3-q4.ts",
+    "q5": "node --no-warnings scripts/q5-poison.ts",
+    "q6": "node --no-warnings scripts/q6-delay.ts",
+    "e4:up": "node --no-warnings scripts/e4-reset.ts && docker compose --profile e4 up -d --build --wait",
+    "q7": "npm run e4:up && node --no-warnings scripts/q7-e4.ts",
+    "q8": "node --no-warnings scripts/q8-contract.ts",
+    "validate:asyncapi": "asyncapi validate asyncapi.yaml",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "amqplib": "2.2.0",
+    "openai": "7.43.0",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@asyncapi/cli": "6.2.1",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "typescript": "6.0.3",
+    "yaml": "2.9.1"
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "maquina": {
+    "fecha": "2026-10-24T19:15:49.137Z",
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "hilos": 20,
+    "ramGB": 64,
+    "so": "Windows_NT 10.0.26200",
+    "node": "v24.19.0",
+    "docker": "29.9.2",
+    "compose": "5.6.0",
+    "buildx": "v0.38.1",
+    "vm": "Docker Desktop sobre WSL2, VM con 20 CPU y 31 GB, almacén de imágenes containerd"
+  },
+  "trivy": {
+    "version": "0.76.1",
+    "db": "2026-10-24"
+  },
+  "filas": [
+    {
+      "id": "node",
+      "nombre": "node:24 (Debian 12 completo)",
+      "ref": "node:24.22.1-bookworm",
+      "img": "s08-docker/k2-node",
+      "t": {
+        "disco": "1.66GB",
+        "contenido": "412MB",
+        "bytes": 1657141719,
+        "capas": 12
+      },
+      "base": {
+        "disco": "1.65GB",
+        "contenido": "426MB",
+        "bytes": 1630329266,
+        "capas": 8
+      },
+      "shell": true,
+      "gestor": "apt-get",
+      "usuario": "node",
+      "uid": "1000",
+      "arranca": true,
+      "tr": {
+        "total": 4641,
+        "CRITICAL": 21,
+        "HIGH": 618,
+        "MEDIUM": 2076,
+        "LOW": 1760,
+        "UNKNOWN": 166,
+        "corregibles": 26,
+        "so": 4625,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 413,
+        "sistema": "debian 12.15"
+      },
+      "sc": {
+        "C": 3,
+        "H": 57,
+        "M": 85,
+        "L": 245
+      }
+    },
+    {
+      "id": "slim",
+      "nombre": "node:24-slim (Debian 12 recortado)",
+      "ref": "node:24.22.1-bookworm-slim",
+      "img": "s08-docker/k2-slim",
+      "t": {
+        "disco": "357MB",
+        "contenido": "83.4MB",
+        "bytes": 357183075,
+        "capas": 9
+      },
+      "base": {
+        "disco": "333MB",
+        "contenido": "83.7MB",
+        "bytes": 330370448,
+        "capas": 5
+      },
+      "shell": true,
+      "gestor": "apt-get",
+      "usuario": "node",
+      "uid": "1000",
+      "arranca": true,
+      "tr": {
+        "total": 245,
+        "CRITICAL": 1,
+        "HIGH": 62,
+        "MEDIUM": 96,
+        "LOW": 84,
+        "UNKNOWN": 2,
+        "corregibles": 16,
+        "so": 229,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 88,
+        "sistema": "debian 12.15"
+      },
+      "sc": {
+        "C": 0,
+        "H": 14,
+        "M": 13,
+        "L": 39
+      }
+    },
+    {
+      "id": "alpine",
+      "nombre": "node:24-alpine (Alpine 3.24, musl)",
+      "ref": "node:24.22.1-alpine3.24",
+      "img": "s08-docker/k2-alpine",
+      "t": {
+        "disco": "270MB",
+        "contenido": "64.8MB",
+        "bytes": 270401687,
+        "capas": 8
+      },
+      "base": {
+        "disco": "244MB",
+        "contenido": "62.8MB",
+        "bytes": 243589249,
+        "capas": 4
+      },
+      "shell": true,
+      "gestor": "apk",
+      "usuario": "node",
+      "uid": "1000",
+      "arranca": true,
+      "tr": {
+        "total": 16,
+        "CRITICAL": 0,
+        "HIGH": 6,
+        "MEDIUM": 9,
+        "LOW": 1,
+        "UNKNOWN": 0,
+        "corregibles": 15,
+        "so": 0,
+        "node": 15,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 19,
+        "sistema": "alpine 3.24.3"
+      },
+      "sc": {
+        "C": 0,
+        "H": 6,
+        "M": 9,
+        "L": 1
+      }
+    },
+    {
+      "id": "distroless",
+      "nombre": "distroless nodejs24-debian13 (Google)",
+      "ref": "gcr.io/distroless/nodejs24-debian13:nonroot",
+      "img": "s08-docker/k2-distroless",
+      "t": {
+        "disco": "242MB",
+        "contenido": "57.8MB",
+        "bytes": 241583255,
+        "capas": 26
+      },
+      "base": {
+        "disco": "215MB",
+        "contenido": "55.5MB",
+        "bytes": 214771253,
+        "capas": 22
+      },
+      "shell": false,
+      "gestor": "ninguno",
+      "usuario": "65532",
+      "uid": "65532",
+      "arranca": true,
+      "tr": {
+        "total": 32,
+        "CRITICAL": 0,
+        "HIGH": 1,
+        "MEDIUM": 23,
+        "LOW": 8,
+        "UNKNOWN": 0,
+        "corregibles": 1,
+        "so": 31,
+        "node": 0,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 14,
+        "sistema": "debian 13.7"
+      },
+      "sc": {
+        "C": 0,
+        "H": 1,
+        "M": 0,
+        "L": 0
+      }
+    },
+    {
+      "id": "dhi",
+      "nombre": "Docker Hardened Image dhi.io/node:24",
+      "ref": "dhi.io/node:24.22.1",
+      "img": "s08-docker/k2-dhi",
+      "t": {
+        "disco": "207MB",
+        "contenido": "44.2MB",
+        "bytes": 207202584,
+        "capas": 10
+      },
+      "base": {
+        "disco": "180MB",
+        "contenido": "41.9MB",
+        "bytes": 180395217,
+        "capas": 6
+      },
+      "shell": false,
+      "gestor": "ninguno",
+      "usuario": "1000",
+      "uid": "1000",
+      "arranca": true,
+      "tr": {
+        "total": 32,
+        "CRITICAL": 0,
+        "HIGH": 1,
+        "MEDIUM": 23,
+        "LOW": 8,
+        "UNKNOWN": 0,
+        "corregibles": 1,
+        "so": 31,
+        "node": 0,
+        "app": 1,
+        "altasApp": [
+          "multer 2.4.0"
+        ],
+        "paquetesSO": 14,
+        "sistema": "debian 13.7"
+      },
+      "sc": {
+        "C": 0,
+        "H": 2,
+        "M": 0,
+        "L": 8
+      }
+    }
+  ]
+}

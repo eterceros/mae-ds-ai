@@ -1,0 +1,26 @@
+# ANTES (escenario K7): generado por Gordon (docker ai, Docker Desktop) con ia/prompt.txt; Gordon no pudo leer
+# los archivos (se rechazaron sus herramientas). Copiado tal cual. SIN REVISAR. Revisado: despues/Dockerfile.ia-gordon-revisado.
+FROM node:24-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY tsconfig.json tsconfig.build.json ./
+COPY src ./src
+RUN npm run build
+
+FROM node:24-alpine AS production
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --from=build --chown=node:node /app/dist ./dist
+
+ENV PORT=3000
+EXPOSE 3000
+USER node
+
+CMD ["node", "dist/main.js"]

@@ -1,0 +1,90 @@
+# DESPUES (escenarios K5 y K6): stack de referencia de la demo.
+# Version sin corregir: antes/compose.yaml. Desde esta carpeta (despues/):
+#   docker compose up -d --wait      levanta Postgres, corre las migraciones y arranca la API
+#   docker compose down -v           borra contenedores, red y volumen
+# Tambien corre con Podman: "podman compose up -d" (ver README, seccion Podman).
+# Por eso las imagenes llevan el registro completo (docker.io/...): Podman no
+# asume Docker Hub para nombres cortos.
+name: s08-docker
+
+# Variables de conexion comunes a migrate y api (ancla YAML).
+x-db: &db
+  PGHOST: postgres
+  PGPORT: "5432"
+  PGUSER: postgres
+  # Clave de demo. En un entorno real llega como secreto, nunca en la imagen (K4).
+  PGPASSWORD: ${PGPASSWORD:-demo}
+  PGDATABASE: tienda
+
+services:
+  postgres:
+    image: docker.io/library/postgres:17.11@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD:-demo}
+      POSTGRES_DB: tienda
+    ports: ["127.0.0.1:18132:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # CORRECCIÓN: healthcheck. Sin el, Compose no tiene forma de saber cuando
+    # Postgres acepta conexiones (en antes/compose.yaml la API murio en 5 de 5
+    # arranques con el volumen vacio, K5).
+    healthcheck:
+      # CORRECCIÓN: -h 127.0.0.1 (TCP), el mismo camino que usa la API. Durante
+      # la inicializacion de un volumen nuevo la imagen de Postgres levanta un
+      # servidor temporal que solo escucha por socket Unix; un pg_isready por
+      # socket puede decir "listo" antes de tiempo (antes/compose.healthcheck-socket.yaml;
+      # en K5 no se llego a ver fallar, pero es una carrera).
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "tienda"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+
+  # CORRECCIÓN: migraciones como servicio que corre una vez y termina (K6). Usa
+  # la misma imagen que la API con otro comando. Si sale con error, la API no
+  # arranca; si se repite, no aplica nada (lleva registro en schema_migrations).
+  migrate:
+    build:
+      context: ../api
+      dockerfile: ../despues/Dockerfile
+    image: s08-docker/api:local
+    command: ["node", "dist/migrate.js"]
+    environment: *db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    image: s08-docker/api:local
+    environment: *db
+    ports: ["127.0.0.1:18100:3000"]
+    # CORRECCIÓN: depends_on con condicion. service_healthy espera el healthcheck
+    # de Postgres (no solo que el contenedor exista) y service_completed_successfully
+    # espera que migrate termine con codigo 0 (K5: 5 de 5 arranques bien).
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    # CORRECCIÓN: healthcheck propio, asi "up --wait" sabe cuando la API esta
+    # lista. La imagen slim no trae curl; node si. /salud no toca la base.
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/salud').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  # Perfil opcional: un psql para mirar la base. No arranca con "up" normal.
+  #   docker compose --profile herramientas run --rm psql
+  psql:
+    image: docker.io/library/postgres:17.11@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe
+    profiles: ["herramientas"]
+    environment:
+      PGPASSWORD: ${PGPASSWORD:-demo}
+    command: ["psql", "-h", "postgres", "-U", "postgres", "-d", "tienda"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

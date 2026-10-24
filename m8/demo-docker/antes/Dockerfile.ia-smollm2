@@ -1,0 +1,68 @@
+# ANTES (escenario K7): generado por ai/smollm2 (Docker Model Runner) con ia/prompt.txt, temperature 0, max_tokens 700.
+# Copiado tal cual (se quito solo la ultima linea, cortada por max_tokens). SIN REVISAR.
+FROM nest:v2.10.0
+
+# Install dependencies
+RUN npm install -g @nestjs/cli @nestjs/cli@v2.10.0
+
+# Configure environment variables
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL
+RUN npm install -g @nestjs/cli@v2.10.0 --save-dev
+
+# Configure PostgreSQL

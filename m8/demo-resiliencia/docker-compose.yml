@@ -1,0 +1,48 @@
+# Demo de resiliencia (M8, S08). A -> Toxiproxy -> B. Solo escucha en 127.0.0.1, puertos 18200-18299.
+# Levantar: docker compose up -d --build --wait   |   Borrar todo: docker compose down -v
+name: s08-resil
+
+services:
+  b:
+    build: .
+    image: s08-resil/app:local
+    command: ["node", "src/b.ts"]
+    ports: ["127.0.0.1:18201:3001"] # /stats de B (cuántas peticiones recibió)
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/stats').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 2s
+      retries: 15
+
+  toxiproxy:
+    # Proxy TCP que se controla por su API: agrega latencia, cuelga o corta conexiones hacia B.
+    image: ghcr.io/shopify/toxiproxy:2.13.0@sha256:5d3dae09bc185dcc5ff6cf43abf6062a4a720aff0c4306a471e773acdcd107aa
+    command: ["-host=0.0.0.0", "-config=/config/toxiproxy.json"]
+    environment: { LOG_LEVEL: error } # sin esto escribe una línea por conexión
+    volumes: ["./toxiproxy/toxiproxy.json:/config/toxiproxy.json:ro"]
+    ports: ["127.0.0.1:18210:8474"] # API de Toxiproxy
+    depends_on:
+      b: { condition: service_healthy }
+
+  a:
+    build: .
+    image: s08-resil/app:local
+    command: ["node", "src/a.ts"]
+    environment:
+      B_URL: http://toxiproxy:8666
+      B_LENTO_URL: http://toxiproxy:8667
+      B_RAPIDO_URL: http://toxiproxy:8668
+    ports: ["127.0.0.1:18200:3000"]
+    depends_on:
+      toxiproxy: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/stats').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 2s
+      retries: 15
+
+  k6:
+    # Solo se usa con "docker compose run --rm k6 run ..." (perfil "carga"; no arranca con up).
+    image: grafana/k6:2.3.0@sha256:2dd4756ec6e14e62778916e1eb850108e4b499304c02df56760fa0bdb0fba0b8
+    profiles: ["carga"]
+    volumes:
+      - ./k6:/k6:ro
+      - ./results/raw:/out
