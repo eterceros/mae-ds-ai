@@ -1,0 +1,30 @@
+# Demo de integración (M8, S09). Solo escucha en 127.0.0.1 y en puertos 18400-18499.
+# Levantar:  docker compose up -d --wait
+# Borrar todo (contenedor y datos): docker compose down -v
+# El receptor del webhook, el worker, los importadores, el «tercero» simulado y el emisor son procesos
+# de Node que lanzan los scripts de medición, en el anfitrión o dentro del servicio "tools" (perfil tools).
+name: s09-int
+
+services:
+  postgres:
+    image: postgres:17.11
+    environment:
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: integ
+    ports: ["127.0.0.1:18432:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "integ"]
+      interval: 2s
+      retries: 30
+
+  # Mediciones de I2 dentro de la red de Compose (ver Dockerfile):
+  #   docker compose --profile tools run --rm --build tools
+  tools:
+    profiles: ["tools"]
+    build: .
+    environment:
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/integ
+      DOCKER_INFO: ${DOCKER_INFO:-}
+    volumes: ["./results:/app/results"]
+    depends_on:
+      postgres: { condition: service_healthy }

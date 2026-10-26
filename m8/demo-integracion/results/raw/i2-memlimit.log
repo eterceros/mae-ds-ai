@@ -1,0 +1,19 @@
+ Container s09-int-postgres-1 Running 
+ Container s09-int-postgres-1 Waiting 
+ Container s09-int-postgres-1 Healthy 
+ Container s09-int-tools-run-83795bcacaec Creating 
+ Container s09-int-tools-run-83795bcacaec Created 
+64 antes 1 **murió: JavaScript heap out of memory** (código null)
+64 antes 2 **murió: JavaScript heap out of memory** (código null)
+64 antes 3 **murió: JavaScript heap out of memory** (código null)
+64 despues 1 terminó: 479997 insertadas, 15043 rechazadas
+64 despues 2 terminó: 479997 insertadas, 15043 rechazadas
+64 despues 3 terminó: 479997 insertadas, 15043 rechazadas
+32 antes 1 **murió: JavaScript heap out of memory** (código null)
+32 antes 2 **murió: JavaScript heap out of memory** (código null)
+32 antes 3 **murió: JavaScript heap out of memory** (código null)
+32 despues 1 terminó: 479997 insertadas, 15043 rechazadas
+32 despues 2 terminó: 479997 insertadas, 15043 rechazadas
+32 despues 3 terminó: 479997 insertadas, 15043 rechazadas
+
+-> results/I2_LIMITE_MEMORIA.md

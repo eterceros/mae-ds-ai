@@ -1,0 +1,23 @@
+# Lab S09 (M8): Postgres 17 for the "import without breaking" mini-ETL.
+# Listens only on 127.0.0.1:18450.
+#   Start:            docker compose up -d --wait
+#   Delete all data:  docker compose down -v
+name: s09-lab
+
+services:
+  postgres:
+    image: docker.io/library/postgres:17.11
+    environment:
+      POSTGRES_PASSWORD: lab
+      POSTGRES_DB: lab
+    ports: ["127.0.0.1:18450:5432"]
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "lab"]
+      interval: 2s
+      retries: 30
+
+volumes:
+  pgdata:

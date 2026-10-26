@@ -1,0 +1,40 @@
+# Antes y después: qué se corrigió y cuánto se midió
+
+El código está separado en dos carpetas para leer lado a lado la mala práctica y su corrección:
+
+- [`src/antes/`](src/antes/): receptor de webhook sin firma que trabaja dentro de la petición, importador que carga todo en memoria e inserta fila por fila en una transacción, envío en ráfaga con reintentos inmediatos y marca de agua.
+- [`src/despues/`](src/despues/): firma HMAC + ventana + bandeja + `202` + worker idempotente; lectura por partes + validación + rechazados + tabla intermedia + upsert; outbox + concurrencia limitada + `Retry-After` + backoff con jitter + `Idempotency-Key`. Cada corrección está marcada en el código con `// CORRECCIÓN: …` y su porqué.
+- [`src/sim/`](src/sim/): el proveedor de webhooks (y un atacante) y el tercero con límite, simulados.
+
+Las líneas son las de los archivos actuales. Las cifras son las de `results/` (3 corridas, mediana y rango; procesos de Node dentro de la red de Compose).
+
+## I1. Recibir datos: webhook entrante
+
+| Problema | Línea en `antes/` | Cambio en `despues/` | Cifra medida |
+|---|---|---|---|
+| Sin firma: cualquiera que conozca la URL «paga» un pedido | [`antes/webhook-receiver.ts:24`](src/antes/webhook-receiver.ts) (`JSON.parse` y adelante) | [`despues/webhook-receiver.ts:20-32`](src/despues/webhook-receiver.ts): HMAC-SHA256 sobre `id.timestamp.cuerpo crudo` (Standard Webhooks), comparado con `timingSafeEqual` (línea 30); admite varias firmas para rotar el secreto | 20 de 20 falsas aceptadas (200) y abonadas en `antes`; **0 de 20** en `despues` (401), en las 3 corridas |
+| Repetición de una entrega válida capturada | (no se mira la hora) | [`despues/webhook-receiver.ts:24`](src/despues/webhook-receiver.ts): la marca de tiempo va dentro de lo firmado; fuera de ±5 min, 401 | 10 de 10 repeticiones aceptadas en `antes` (cada una, un abono más); **0 de 10** en `despues` |
+| Trabajo lento dentro de la petición: el proveedor (plazo 2 s) da la entrega por fallida y reenvía, aunque el trabajo siga y termine | [`antes/webhook-receiver.ts:26`](src/antes/webhook-receiver.ts) | [`despues/webhook-receiver.ts:51-58`](src/despues/webhook-receiver.ts): guardar en `webhook_inbox` y responder `202`; el trabajo lo hace [`despues/webhook-worker.ts`](src/despues/webhook-worker.ts) | Respuesta p50/p95: **1138/1917 ms** en `antes` (y 128-133 timeouts) frente a **5/9 ms** en `despues`. Reenvíos: **127-131** frente a **0** |
+| Sin idempotencia: cada reenvío, duplicado del proveedor o repetición vuelve a abonar | [`antes/webhook-receiver.ts:27-28`](src/antes/webhook-receiver.ts) | [`despues/webhook-receiver.ts:55`](src/despues/webhook-receiver.ts): clave primaria `webhook-id`, `ON CONFLICT DO NOTHING`, 200 al repetido; [`despues/webhook-worker.ts:38-46`](src/despues/webhook-worker.ts): solo quien pasa el evento a `done` anota el abono, en la misma transacción | Abonos duplicados por cada 200 eventos: **157-161** en `antes` (= reenvíos + 20 duplicados del proveedor + 10 repeticiones); **0** en `despues`, con las mismas 20 entregas duplicadas |
+| Una cola sin broker: varios workers sin pisarse y sin tener la transacción abierta durante el trabajo lento | — | [`despues/webhook-worker.ts:15-28`](src/despues/webhook-worker.ts): `FOR UPDATE SKIP LOCKED` + estado `processing` con plazo (`locked_until`); el trabajo va fuera de la transacción (línea 34) | 200/200 eventos procesados una vez, en 40,7-42,4 s con 8 en paralelo (el trabajo simulado suma ~320 s) |
+
+## I2. Cargar datos por lotes: mini-ETL
+
+| Problema | Línea en `antes/` | Cambio en `despues/` | Cifra medida |
+|---|---|---|---|
+| Todo el archivo en memoria, y además como objetos | [`antes/importer.ts:21-25`](src/antes/importer.ts) | [`despues/importer.ts:25-34`](src/despues/importer.ts): generador que lee trozos de 64 KB; mientras se escribe un lote no se lee | RSS pico con 50 000 → 500 000 filas: **168 → 454 MB** en `antes` (heap 66 → 302 MB); **138 → 229 MB** en `despues` (heap 39 → 90 MB). Con el heap limitado a 32 o 64 MB, `antes` muere por falta de memoria (3 de 3) y `despues` termina (3 de 3) |
+| Una fila mala aborta todo, y no queda dicho cuál ni por qué | [`antes/importer.ts:31-45`](src/antes/importer.ts) (una transacción, `ROLLBACK`) | [`despues/importer.ts:40-60`](src/despues/importer.ts): validación por fila; [`despues/importer.ts:129-134`](src/despues/importer.ts): rechazados a CSV con línea y motivo; una transacción por lote | `antes`: aborta en la línea 38, **0 filas cargadas** de 50 000 (y de 500 000, tras leer el archivo entero: 320 MB). `despues`: 48 090 cargadas y **1428 rechazadas** con motivo, exactamente las del manifiesto del generador |
+| «La base ya valida»: solo rechaza lo que sus tipos detectan | sin validación | [`despues/importer.ts:40-60`](src/despues/importer.ts) | De las 1428 inválidas, Postgres habría aceptado **807** como basura (correo vacío o mal formado, monto negativo, país inventado) y rechazado 621 (monto no entero, fecha imposible, columna faltante) ([`I2_BASURA.md`](results/I2_BASURA.md)) |
+| Un `INSERT` por fila: una ida y vuelta a la base por fila | [`antes/importer.ts:32-37`](src/antes/importer.ts) | [`despues/importer.ts:89-90`](src/despues/importer.ts): un `INSERT` de 1000 filas a `customers_staging` y una fusión por lote | 50 000 filas: **7,0 s** en `antes` (con menos filas: el archivo de válidas) frente a **1,3 s** en `despues`; 500 000: **78,9 s** frente a **13,2 s** |
+| Re-ejecutar duplica (sin clave natural ni upsert) | [`antes/importer.ts:34`](src/antes/importer.ts), tabla `customers_naive` sin `UNIQUE` | [`despues/importer.ts:91-105`](src/despues/importer.ts): `DISTINCT ON (external_id)` + `ON CONFLICT (external_id) DO UPDATE … WHERE … IS DISTINCT FROM` + `RETURNING (xmax = 0)` | `antes`: 48 572 filas para 48 090 clientes; la 2.ª ejecución deja **97 144**. `despues`: 2.ª ejecución con el mismo archivo, **0 insertadas y 0 actualizadas** (3 de 3, con 50 000 y con 500 000), `updated_at` intacto |
+| El archivo cambió de formato y nadie se enteró | — | [`despues/importer.ts:123-124`](src/despues/importer.ts): se comprueba la cabecera antes de cargar | no medido (no hay un caso con otra cabecera) |
+
+## I3. Enviar datos a un tercero
+
+| Problema | Línea en `antes/` | Cambio en `despues/` | Cifra medida |
+|---|---|---|---|
+| Todo a la vez contra un límite de 50/s | [`antes/sender.ts:37`](src/antes/sender.ts) (`Promise.all`) | [`despues/sender.ts:96-99`](src/despues/sender.ts): 8 envíos a la vez | 1000 pedidos: `antes` hace **3781 peticiones, 3678 con 429**, en 1,5 s; `despues`, 1045 peticiones y 22 con 429, en 22,1 s (mínimo teórico 19 s) |
+| Reintentar en el acto, sin mirar `Retry-After` | [`antes/sender.ts:21`](src/antes/sender.ts) (3 reintentos inmediatos) | [`despues/sender.ts:69-78`](src/despues/sender.ts): `Retry-After` respetado y compartido por todos los envíos ([`despues/sender.ts:28-40`](src/despues/sender.ts)); [`despues/sender.ts:45`](src/despues/sender.ts): backoff exponencial con jitter ante `503` | Perdidos: **895-904 de 1000** en `antes`; **0** en `despues` (3 de 3) |
+| Pérdida silenciosa: la marca de agua avanza aunque haya fallos | [`antes/sender.ts:33`](src/antes/sender.ts) (solo un log) y [`antes/sender.ts:38-39`](src/antes/sender.ts) | [`despues/sender.ts:65`](src/despues/sender.ts): `sent` solo con un 2xx; [`despues/sender.ts:85-87`](src/despues/sender.ts): agotados los intentos, queda `pending` con `next_attempt_at` y `last_error` | La 2.ª pasada de `antes` no toma **ningún** pedido: los ~900 perdidos no se recuperan. En `despues`, 0 pendientes en `outbound` al terminar |
+| Reintento que duplica en el tercero | sin clave | [`despues/sender.ts:57`](src/despues/sender.ts): `Idempotency-Key` = id del envío | 0 duplicados en el tercero en todas las variantes (en esta simulación un 429/503 nunca registra el pedido; ver «Qué no se midió») |
+| Rebotar contra el límite en vez de no llegar a él | — | [`despues/sender.ts:34-40`](src/despues/sender.ts): `CLIENT_RPS` (ritmo propio) | Con `CLIENT_RPS=45`: **0 respuestas 429**, 0 perdidos, 22,8 s (casi lo mismo que rebotando: 22,1 s) |

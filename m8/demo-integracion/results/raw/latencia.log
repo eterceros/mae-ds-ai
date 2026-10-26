@@ -1,0 +1,1 @@
+2026-10-26T03:02:57-04:00 ida y vuelta SELECT 1: anfitrión -> 127.0.0.1:18432 = 7.98 ms (500 consultas); contenedor tools -> postgres:5432 = 0.118 ms (2000 consultas)

@@ -1,0 +1,27 @@
+{
+  "name": "demo-integracion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S09): integración con sistemas externos; webhook entrante con firma HMAC e idempotencia, carga por lotes (mini-ETL) con upsert idempotente y envío a un tercero que limita con 429 + Retry-After.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "up": "docker compose up -d --wait",
+    "down": "docker compose down -v",
+    "gen-csv": "node --no-warnings scripts/gen-csv.ts",
+    "i1": "node --no-warnings scripts/i1-webhook.ts",
+    "i2": "node --no-warnings scripts/i2-import.ts",
+    "i3": "node --no-warnings scripts/i3-send.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "typescript": "6.0.3"
+  }
+}
