@@ -1,0 +1,14 @@
+# Gateway: la puerta de entrada al clúster. Lo deja listo el docente: se aplica
+# tal como está, sin cambios y sin TODO. No se explica en clase; solo hace falta
+# su nombre (lab) para que su HTTPRoute se enganche a él.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: lab
+spec:
+  # La clase "eg" la crea el script instalar-gateway del docente.
+  gatewayClassName: eg
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80

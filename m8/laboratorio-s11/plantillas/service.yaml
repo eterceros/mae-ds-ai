@@ -1,0 +1,23 @@
+# Service: un nombre y un puerto estables delante de los pods del Deployment.
+apiVersion: v1
+kind: Service
+metadata:
+  # TODO: el nombre con el que otros servicios llamarían al suyo (como el
+  # nombre del servicio en compose.yaml).
+  name: TODO_NOMBRE_SERVICIO
+spec:
+  # ClusterIP (el valor por omisión): solo se alcanza desde dentro del clúster.
+  # En el laboratorio llegan desde su máquina con `kubectl port-forward`.
+  type: ClusterIP
+  selector:
+    # TODO: debe coincidir con las etiquetas de los pods en deployment.yaml
+    # (spec.template.metadata.labels). Si no coinciden, el Service se queda
+    # sin endpoints y nadie responde.
+    app: TODO_NOMBRE_SERVICIO
+  ports:
+    - name: http
+      # Puerto del Service (el que usan los clientes).
+      port: 80
+      # TODO: el puerto en el que escucha su contenedor (containerPort en
+      # deployment.yaml), o su nombre: http.
+      targetPort: TODO_PUERTO_CONTENEDOR

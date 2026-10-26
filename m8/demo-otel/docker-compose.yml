@@ -1,0 +1,213 @@
+# Demo de OpenTelemetry (M8, S11). Solo escucha en 127.0.0.1 y en puertos 18530-18559.
+# Levantar todo:      docker compose up -d --build --wait
+# Carga con k6:       docker compose --profile load run --rm k6 run /scripts/pedidos.js
+# Borrar todo:        docker compose --profile load down -v
+#
+# Dos copias del mismo sistema, una al lado de la otra (mismo Postgres y RabbitMQ, esquema y cola propios):
+#   antes   = src/antes/   (traceparent manual de la S08, logs de texto), SIN instrumentar.
+#             Para encender la instrumentación sobre ese mismo código (escenario OB), ver README:
+#             ANTES_NODE_OPTIONS="--experimental-loader=... --import ..." docker compose up -d --wait
+#   despues = src/despues/ con la auto-instrumentación de OpenTelemetry cargada por NODE_OPTIONS
+name: s11-otel
+
+x-app: &app
+  image: s11-otel-app:local
+  build: .
+
+x-otel: &otel
+  # Todo lo de OpenTelemetry se configura con variables; el código de la app no las lee.
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://lgtm:4318
+  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+  OTEL_TRACES_EXPORTER: otlp
+  OTEL_METRICS_EXPORTER: otlp
+  OTEL_LOGS_EXPORTER: otlp
+  # Sin los detectores de nube (AWS, GCP, Azure...), que al arrancar intentan hablar con su servicio de metadatos.
+  OTEL_NODE_RESOURCE_DETECTORS: env,host,os,process,serviceinstance
+  # Spans de cada conexión TCP, de cada consulta DNS y del paquete router (repite los de Express): ruido aquí.
+  OTEL_NODE_DISABLED_INSTRUMENTATIONS: net,dns,router
+
+x-instrumentado: &instrumentado
+  # 1) el gancho de import-in-the-middle: la app es ESM y sin él no se interceptan los import
+  #    (sin él faltan los spans de Express y el trace_id en los logs de pino: ver results/)
+  # 2) el SDK 3.0 y todas las instrumentaciones (@opentelemetry/auto-instrumentations-node)
+  NODE_OPTIONS: --experimental-loader=@opentelemetry/instrumentation/hook.mjs --import @opentelemetry/auto-instrumentations-node/register
+
+x-salud: &salud
+  test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/salud').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+  interval: 2s
+  retries: 30
+
+services:
+  lgtm:
+    # Grafana + Tempo + Loki + Prometheus + colector OTel en una sola imagen, solo para desarrollo local.
+    # En esta sesión se usa únicamente Explore -> Tempo (ver una traza). Paneles y alertas: otros módulos.
+    image: grafana/otel-lgtm:0.38.0
+    ports:
+      - "127.0.0.1:18530:3000"   # Grafana: http://127.0.0.1:18530 (sin usuario)
+      - "127.0.0.1:18532:4318"   # OTLP/HTTP (para mandar telemetría desde el anfitrión)
+      - "127.0.0.1:18533:3200"   # API de Tempo (la usan los scripts de medición)
+      - "127.0.0.1:18534:3100"   # API de Loki (ídem, para OC)
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:3000/api/health && curl -sf http://127.0.0.1:3200/ready"]
+      interval: 3s
+      retries: 60
+
+  postgres:
+    image: postgres:17.11
+    environment:
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: pedidos
+    ports: ["127.0.0.1:18545:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "pedidos"]
+      interval: 2s
+      retries: 30
+
+  rabbitmq:
+    image: rabbitmq:4.4.0-management
+    hostname: rabbit-s11
+    environment:
+      RABBITMQ_DEFAULT_USER: demo
+      RABBITMQ_DEFAULT_PASS: demo
+    ports:
+      - "127.0.0.1:18540:5672"    # AMQP 0-9-1
+      - "127.0.0.1:18541:15672"   # consola: http://127.0.0.1:18541 (demo/demo)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 3s
+      retries: 40
+
+  # ---------------- antes: src/antes/ (sin instrumentar, salvo ANTES_NODE_OPTIONS) ----------------
+  precios-antes:
+    <<: *app
+    command: ["node", "dist/precios.js"]
+    environment:
+      <<: *otel
+      NODE_OPTIONS: ${ANTES_NODE_OPTIONS:-}
+      OTEL_SERVICE_NAME: precios
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=antes
+      PORT: "3000"
+      SLOW_EVERY: ${SLOW_EVERY:-10}
+      SLOW_MS: ${SLOW_MS:-600}
+    ports: ["127.0.0.1:18551:3000"]
+    healthcheck: *salud
+
+  api-antes:
+    <<: *app
+    command: ["node", "dist/antes/api.js"]
+    environment:
+      <<: *otel
+      NODE_OPTIONS: ${ANTES_NODE_OPTIONS:-}
+      OTEL_SERVICE_NAME: api
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=antes
+      PORT: "3000"
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/pedidos
+      DB_SCHEMA: antes
+      PRECIOS_URL: http://precios-antes:3000
+    ports: ["127.0.0.1:18550:3000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      precios-antes: { condition: service_healthy }
+    healthcheck: *salud
+
+  relay-antes:
+    <<: *app
+    command: ["node", "dist/antes/relay.js"]
+    environment:
+      <<: *otel
+      NODE_OPTIONS: ${ANTES_NODE_OPTIONS:-}
+      OTEL_SERVICE_NAME: relay
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=antes
+      # además, sin la instrumentación de pg: el sondeo de la outbox crearía una traza cada 50 ms
+      OTEL_NODE_DISABLED_INSTRUMENTATIONS: net,dns,router,pg
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/pedidos
+      DB_SCHEMA: antes
+      AMQP_URL: amqp://demo:demo@rabbitmq:5672
+      QUEUE: pedidos.antes
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  worker-antes:
+    <<: *app
+    command: ["node", "dist/antes/worker.js"]
+    environment:
+      <<: *otel
+      NODE_OPTIONS: ${ANTES_NODE_OPTIONS:-}
+      OTEL_SERVICE_NAME: worker
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=antes
+      AMQP_URL: amqp://demo:demo@rabbitmq:5672
+      QUEUE: pedidos.antes
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  # ---------------- despues: src/despues/ + auto-instrumentación ----------------
+  precios-despues:
+    <<: *app
+    command: ["node", "dist/precios.js"]
+    environment:
+      <<: [*otel, *instrumentado]
+      OTEL_SERVICE_NAME: precios
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=despues
+      PORT: "3000"
+      SLOW_EVERY: ${SLOW_EVERY:-10}
+      SLOW_MS: ${SLOW_MS:-600}
+    ports: ["127.0.0.1:18556:3000"]
+    depends_on:
+      lgtm: { condition: service_healthy }
+    healthcheck: *salud
+
+  api-despues:
+    <<: *app
+    command: ["node", "dist/despues/api.js"]
+    environment:
+      <<: [*otel, *instrumentado]
+      OTEL_SERVICE_NAME: api
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=despues
+      PORT: "3000"
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/pedidos
+      DB_SCHEMA: despues
+      PRECIOS_URL: http://precios-despues:3000
+    ports: ["127.0.0.1:18555:3000"]
+    depends_on:
+      lgtm: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      precios-despues: { condition: service_healthy }
+    healthcheck: *salud
+
+  relay-despues:
+    <<: *app
+    command: ["node", "dist/despues/relay.js"]
+    environment:
+      <<: [*otel, *instrumentado]
+      OTEL_SERVICE_NAME: relay
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=despues
+      OTEL_NODE_DISABLED_INSTRUMENTATIONS: net,dns,router,pg
+      DATABASE_URL: postgres://postgres:demo@postgres:5432/pedidos
+      DB_SCHEMA: despues
+      AMQP_URL: amqp://demo:demo@rabbitmq:5672
+      QUEUE: pedidos.despues
+    depends_on:
+      lgtm: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  worker-despues:
+    <<: *app
+    command: ["node", "dist/despues/worker.js"]
+    environment:
+      <<: [*otel, *instrumentado]
+      OTEL_SERVICE_NAME: worker
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=despues
+      AMQP_URL: amqp://demo:demo@rabbitmq:5672
+      QUEUE: pedidos.despues
+    depends_on:
+      lgtm: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  k6:
+    profiles: ["load"]
+    image: grafana/k6:2.3.0
+    volumes: ["./k6:/scripts:ro", "./results/raw:/out"]
+    environment:
+      BASE_URL: ${BASE_URL:-http://api-despues:3000}

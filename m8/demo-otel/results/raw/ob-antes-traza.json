@@ -1,0 +1,291 @@
+{
+ "traza": [
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-pg",
+   "name": "pg-pool.connect",
+   "kind": "CLIENT",
+   "spanId": "fea89d48a28a8a7a",
+   "parentId": "f4b6ce3fc022cd79",
+   "start": 1793009266365,
+   "end": 1793009266365.988,
+   "ms": 0.988037109375,
+   "attrs": {
+    "db.postgresql.idle.timeout.millis": 10000,
+    "db.system.name": "postgresql",
+    "db.namespace": "pedidos",
+    "server.address": "postgres",
+    "server.port": 5432
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-pg",
+   "name": "pg.query:BEGIN pedidos",
+   "kind": "CLIENT",
+   "spanId": "5adfc60d5afdbf45",
+   "parentId": "f4b6ce3fc022cd79",
+   "start": 1793009266366,
+   "end": 1793009266377.119,
+   "ms": 11.118896484375,
+   "attrs": {
+    "db.system.name": "postgresql",
+    "db.namespace": "pedidos",
+    "db.query.text": "BEGIN",
+    "server.address": "postgres",
+    "server.port": 5432
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-pg",
+   "name": "pg.query:INSERT pedidos",
+   "kind": "CLIENT",
+   "spanId": "119e0c9d7e448ea7",
+   "parentId": "f4b6ce3fc022cd79",
+   "start": 1793009266378,
+   "end": 1793009266380.653,
+   "ms": 2.653076171875,
+   "attrs": {
+    "db.system.name": "postgresql",
+    "db.namespace": "pedidos",
+    "db.query.text": "INSERT INTO antes.pedidos (id, sku, cantidad, total_cents) VALUES ($1, $2, $3, $4)",
+    "server.address": "postgres",
+    "server.port": 5432
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-pg",
+   "name": "pg.query:INSERT pedidos",
+   "kind": "CLIENT",
+   "spanId": "ed0bbb055a0a7d92",
+   "parentId": "f4b6ce3fc022cd79",
+   "start": 1793009266380,
+   "end": 1793009266381.587,
+   "ms": 1.5869140625,
+   "attrs": {
+    "db.system.name": "postgresql",
+    "db.namespace": "pedidos",
+    "db.query.text": "INSERT INTO antes.outbox (pedido_id, payload, headers) VALUES ($1, $2, $3)",
+    "server.address": "postgres",
+    "server.port": 5432
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-pg",
+   "name": "pg.query:COMMIT pedidos",
+   "kind": "CLIENT",
+   "spanId": "72e11d8b524e8af5",
+   "parentId": "f4b6ce3fc022cd79",
+   "start": 1793009266382,
+   "end": 1793009266386.225,
+   "ms": 4.22509765625,
+   "attrs": {
+    "db.system.name": "postgresql",
+    "db.namespace": "pedidos",
+    "db.query.text": "COMMIT",
+    "server.address": "postgres",
+    "server.port": 5432
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-express",
+   "name": "middleware - <anonymous>",
+   "kind": "INTERNAL",
+   "spanId": "7f8e7ad4f21fe162",
+   "parentId": "29533cff3cf859b4",
+   "start": 1793009266335,
+   "end": 1793009266335.068,
+   "ms": 0.068115234375,
+   "attrs": {
+    "express.name": "<anonymous>",
+    "express.type": "middleware"
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-express",
+   "name": "middleware - jsonParser",
+   "kind": "INTERNAL",
+   "spanId": "1579873126b4e583",
+   "parentId": "29533cff3cf859b4",
+   "start": 1793009266336,
+   "end": 1793009266336.508,
+   "ms": 0.508056640625,
+   "attrs": {
+    "express.name": "jsonParser",
+    "express.type": "middleware"
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-express",
+   "name": "middleware - urlencodedParser",
+   "kind": "INTERNAL",
+   "spanId": "63149aa18869a59b",
+   "parentId": "29533cff3cf859b4",
+   "start": 1793009266336,
+   "end": 1793009266336.057,
+   "ms": 0.056884765625,
+   "attrs": {
+    "express.name": "urlencodedParser",
+    "express.type": "middleware"
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-express",
+   "name": "request handler - /pedidos",
+   "kind": "INTERNAL",
+   "spanId": "f4b6ce3fc022cd79",
+   "parentId": "29533cff3cf859b4",
+   "start": 1793009266337,
+   "end": 1793009266389.339,
+   "ms": 52.339111328125,
+   "attrs": {
+    "express.name": "/pedidos",
+    "express.type": "request_handler",
+    "http.route": "/pedidos"
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-http",
+   "name": "POST /pedidos",
+   "kind": "SERVER",
+   "spanId": "29533cff3cf859b4",
+   "parentId": "afd5294323ad2849",
+   "start": 1793009266335,
+   "end": 1793009266388.81,
+   "ms": 53.81005859375,
+   "attrs": {
+    "url.scheme": "http",
+    "network.peer.address": "172.23.0.1",
+    "network.peer.port": 59622,
+    "network.protocol.version": "1.1",
+    "user_agent.original": "node",
+    "client.address": "172.23.0.1",
+    "http.request.method": "POST",
+    "http.response.status_code": 201,
+    "url.path": "/pedidos",
+    "server.address": "127.0.0.1",
+    "server.port": 18550,
+    "http.route": "/pedidos"
+   }
+  },
+  {
+   "service": "api",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-undici",
+   "name": "GET",
+   "kind": "CLIENT",
+   "spanId": "fb05539fca0aa9e2",
+   "parentId": "f4b6ce3fc022cd79",
+   "start": 1793009266338,
+   "end": 1793009266360.698,
+   "ms": 22.697998046875,
+   "attrs": {
+    "http.request.method_original": "GET",
+    "url.full": "http://precios-antes:3000/precios/sku-3",
+    "url.query": "",
+    "url.scheme": "http",
+    "user_agent.original": "node",
+    "network.peer.address": "172.23.0.5",
+    "network.peer.port": 3000,
+    "network.protocol.version": "1.1",
+    "http.request.method": "GET",
+    "http.response.status_code": 200,
+    "url.path": "/precios/sku-3",
+    "server.address": "precios-antes",
+    "server.port": 3000
+   }
+  },
+  {
+   "service": "precios",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-http",
+   "name": "GET",
+   "kind": "SERVER",
+   "spanId": "c6debc210c4d7e9b",
+   "parentId": "fb05539fca0aa9e2",
+   "start": 1793009266354,
+   "end": 1793009266356.639,
+   "ms": 2.638916015625,
+   "attrs": {
+    "url.scheme": "http",
+    "network.peer.address": "172.23.0.8",
+    "network.peer.port": 47022,
+    "network.protocol.version": "1.1",
+    "user_agent.original": "node",
+    "client.address": "172.23.0.8",
+    "http.request.method": "GET",
+    "http.response.status_code": 200,
+    "url.path": "/precios/sku-3",
+    "server.address": "precios-antes",
+    "server.port": 3000
+   }
+  }
+ ],
+ "otra": [
+  {
+   "service": "relay",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-amqplib",
+   "name": "publish <default>",
+   "kind": "PRODUCER",
+   "spanId": "7b194152a5000aad",
+   "parentId": null,
+   "start": 1793009266416,
+   "end": 1793009266431.831,
+   "ms": 15.8310546875,
+   "attrs": {
+    "messaging.protocol_version": "0.9.1",
+    "messaging.url": "amqp://demo:***@rabbitmq:5672?heartbeat=10",
+    "messaging.protocol": "AMQP",
+    "messaging.system": "rabbitmq",
+    "messaging.destination": "",
+    "messaging.destination_kind": "topic",
+    "messaging.rabbitmq.routing_key": "pedidos.antes",
+    "server.address": "rabbitmq",
+    "server.port": 5672
+   }
+  },
+  {
+   "service": "worker",
+   "namespace": "antes",
+   "scope": "@opentelemetry/instrumentation-amqplib",
+   "name": "pedidos.antes process",
+   "kind": "CONSUMER",
+   "spanId": "168e6ca479793334",
+   "parentId": "7b194152a5000aad",
+   "start": 1793009266434,
+   "end": 1793009266456.266,
+   "ms": 22.26611328125,
+   "attrs": {
+    "messaging.protocol_version": "0.9.1",
+    "messaging.url": "amqp://demo:***@rabbitmq:5672?heartbeat=10",
+    "messaging.protocol": "AMQP",
+    "messaging.system": "rabbitmq",
+    "messaging.destination": "",
+    "messaging.destination_kind": "topic",
+    "messaging.rabbitmq.routing_key": "pedidos.antes",
+    "messaging.operation": "process",
+    "server.address": "rabbitmq",
+    "server.port": 5672
+   }
+  }
+ ]
+}

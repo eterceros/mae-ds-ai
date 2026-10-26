@@ -1,0 +1,13 @@
+# Fragmento de referencia (no se ejecuta). Resource server de Spring Security 7.
+# Con issuer-uri, Spring descubre el JWKS del realm y valida firma, iss y exp.
+# OJO: el "aud" NO se valida por defecto; se añade en SecurityConfig.java.
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://127.0.0.1:18600/realms/demo
+          # Alternativa a issuer-uri si solo se quiere el JWKS:
+          # jwk-set-uri: http://127.0.0.1:18600/realms/demo/protocol/openid-connect/certs
+server:
+  port: 18640

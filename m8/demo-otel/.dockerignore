@@ -1,0 +1,6 @@
+node_modules
+dist
+results
+k6
+scripts
+*.md

@@ -1,0 +1,7 @@
+[oa-antes-1] k6 20/s durante 30s
+[oa-despues-1] k6 20/s durante 30s
+[oa-antes-2] k6 20/s durante 30s
+[oa-despues-2] k6 20/s durante 30s
+[oa-antes-3] k6 20/s durante 30s
+[oa-despues-3] k6 20/s durante 30s
+-> results/OA-OD_P95_A_TRAZA.md

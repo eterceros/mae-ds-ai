@@ -1,0 +1,11 @@
+# Clúster local de kind para la demo: un nodo y la versión de Kubernetes fijada.
+# El servidor de la API escucha solo en 127.0.0.1:18529 (dentro del rango de puertos de la demo).
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: s11-demo
+networking:
+  apiServerAddress: "127.0.0.1"
+  apiServerPort: 18529
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5

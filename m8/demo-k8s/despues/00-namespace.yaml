@@ -1,0 +1,5 @@
+# Todo lo de la demo vive en su propio espacio de nombres: `kubectl delete namespace s11` lo borra.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: s11

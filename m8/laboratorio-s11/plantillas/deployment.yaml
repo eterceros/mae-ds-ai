@@ -1,0 +1,82 @@
+# Deployment: cuántas copias de su servicio corren y cómo se arma cada pod.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # TODO: nombre de su servicio (minúsculas, dígitos y guiones).
+  name: TODO_NOMBRE_SERVICIO
+  labels:
+    app: TODO_NOMBRE_SERVICIO
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      # TODO: la misma etiqueta que en spec.template.metadata.labels.
+      app: TODO_NOMBRE_SERVICIO
+  template:
+    metadata:
+      labels:
+        app: TODO_NOMBRE_SERVICIO
+    spec:
+      containers:
+        - name: TODO_NOMBRE_SERVICIO
+          # TODO: la imagen que construyeron y cargaron con `kind load docker-image`.
+          # Usen una etiqueta fija (por ejemplo :lab), no :latest. Con :latest
+          # Kubernetes intenta siempre bajarla de un registro y falla.
+          image: TODO_IMAGEN:TODO_ETIQUETA
+          # IfNotPresent: usar la imagen que ya está cargada en el nodo de kind.
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              # TODO: el puerto en el que escucha su proceso dentro del contenedor.
+              containerPort: TODO_PUERTO_CONTENEDOR
+          # Configuración no secreta: cada clave del ConfigMap se vuelve una
+          # variable de entorno.
+          envFrom:
+            - configMapRef:
+                # TODO: nombre de su ConfigMap (configmap.yaml).
+                name: TODO_NOMBRE_SERVICIO-config
+          # TODO: los valores secretos. Opción A, como variable de entorno:
+          # env:
+          #   - name: TODO_VARIABLE_DE_ENTORNO
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: TODO_NOMBRE_SERVICIO-secret
+          #         key: TODO_CLAVE_SECRETA
+          # Opción B, montado como archivo (necesita volumeMounts aquí y volumes
+          # en spec.template.spec): su servicio lee el archivo.
+          # volumeMounts:
+          #   - name: secretos
+          #     mountPath: /run/secrets/app
+          #     readOnly: true
+
+          # TODO: readiness. «¿Este pod puede recibir tráfico ahora?»
+          # Mientras falla, el pod sale del Service (no se reinicia).
+          readinessProbe:
+            httpGet:
+              # TODO: su endpoint de salud (por ejemplo /salud).
+              path: /TODO_RUTA_SALUD
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
+          # TODO: liveness. «¿El proceso se colgó y hay que reiniciarlo?»
+          # NO debe consultar dependencias (base, broker, otros servicios): si
+          # una se cae, Kubernetes reiniciaría su pod en bucle sin arreglar
+          # nada. Escríbanla ustedes.
+          # livenessProbe:
+          #   ...
+          # TODO (solo si su servicio tarda en arrancar, p. ej. Spring):
+          # startupProbe, para que la liveness no lo mate mientras arranca.
+
+          # TODO: declaren requests y limits. No los afinen: pongan un valor
+          # razonable y el porqué en un comentario.
+          resources:
+            requests:
+              cpu: TODO_CPU_REQUEST         # p. ej. 100m = una décima de núcleo
+              memory: TODO_MEMORIA_REQUEST  # p. ej. 128Mi
+            limits:
+              memory: TODO_MEMORIA_LIMIT    # si la pasa, el contenedor muere (OOMKilled)
+      # TODO (opción B del Secret):
+      # volumes:
+      #   - name: secretos
+      #     secret:
+      #       secretName: TODO_NOMBRE_SERVICIO-secret

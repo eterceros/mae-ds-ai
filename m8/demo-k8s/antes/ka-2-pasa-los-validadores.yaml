@@ -1,0 +1,120 @@
+# KA, segundo paso: ka-1 tras corregir TODO lo que reportaron `kubectl apply --dry-run=server` y
+# kube-linter (cada arreglo marcado "# ARREGLADO (servidor)" o "# ARREGLADO (kube-linter)"), más uno que
+# no señaló ninguna herramienta ("# ARREGLADO (revisión)"). Las dos herramientas dicen OK.
+# Y aun así no funciona: lo que queda está marcado "# SIGUE MAL" y solo aparece al ejecutar
+# (lo mide scripts/ka-validar.ts). La versión revisada está en ../despues/.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: s11-ka
+data:
+  PRECIOS_URL: http://precios:3001
+  PORT: "3000"                         # ARREGLADO (servidor): los valores son texto
+  DEBUG: "true"                        # ARREGLADO (servidor)
+  # SIGUE MAL: nadie lee este ConfigMap (el Deployment no tiene envFrom) y falta MONEDA
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: api-secretos
+  namespace: s11-ka
+type: Opaque
+data:
+  API_KEY: ZGVtby1jbGF2ZS12MQ==        # ARREGLADO (servidor): base64... SIGUE MAL: base64 no es cifrado, y está en el repo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: s11-ka
+  annotations:
+    ignore-check.kube-linter.io/no-anti-affinity: "clúster kind de un solo nodo"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api                       # ARREGLADO (servidor): debe coincidir con el selector
+    spec:
+      containers:
+        - name: api
+          image: s11-demo/api:1.0      # ARREGLADO (kube-linter): etiqueta fija
+          ports:
+            - containerPort: 3000
+          env:
+            - name: API_KEY
+              valueFrom:               # ARREGLADO (revisión): desde el Secret, no literal
+                secretKeyRef: { name: api-secretos, key: API_KEY }
+          livenessProbe:               # ARREGLADO (servidor): errata
+            httpGet:
+              path: /salud             # SIGUE MAL: la app expone /salud/vivo; /salud responde 404
+              port: 3000
+          resources:
+            requests:
+              cpu: 50m                 # ARREGLADO (kube-linter)
+            limits:
+              memory: 256Mi            # ARREGLADO (servidor)
+              cpu: 500m
+          securityContext:             # ARREGLADO (kube-linter)
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: s11-ka
+spec:
+  type: LoadBalancer                   # SIGUE MAL en kind: no hay balanceador, EXTERNAL-IP queda <pending>
+  selector:
+    app: api
+  ports:
+    - port: 80
+      targetPort: 8080                 # SIGUE MAL: el contenedor escucha en 3000
+      protocol: TCP                    # ARREGLADO (servidor)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: precios
+  namespace: s11-ka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: precios
+  template:
+    metadata:
+      labels:
+        app: precios
+    spec:
+      containers:
+        - name: precios
+          image: s11-demo/precios:1.0  # ARREGLADO (kube-linter): etiqueta fija
+          ports:
+            - containerPort: 3001
+          readinessProbe:
+            httpGet:
+              path: /health            # SIGUE MAL: la app expone /salud
+              port: 3001
+          resources:                   # ARREGLADO (kube-linter)
+            requests: { cpu: 50m }
+            limits: { memory: 128Mi }
+          securityContext:             # ARREGLADO (kube-linter)
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: precios
+  namespace: s11-ka
+spec:
+  selector:
+    app: precios                       # ARREGLADO (kube-linter): dangling-service
+  ports:
+    - port: 3001

@@ -1,0 +1,43 @@
+# precios: servicio "precios" de Compose -> Deployment (los pods) + Service (nombre y puerto estables).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: precios
+  namespace: s11
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: precios }        # CORRECCIÓN: igual a las etiquetas de la plantilla
+  template:
+    metadata:
+      labels: { app: precios }
+    spec:
+      containers:
+        - name: precios
+          image: s11-demo/precios:1.0    # CORRECCIÓN: etiqueta fija; se carga con `kind load docker-image`
+          imagePullPolicy: IfNotPresent  # CORRECCIÓN: nunca ir a un registro por una imagen local
+          ports:
+            - { name: http, containerPort: 3001 }
+          readinessProbe:
+            httpGet: { path: /salud, port: http }   # CORRECCIÓN: la ruta que la app expone de verdad
+            periodSeconds: 2
+          livenessProbe:
+            httpGet: { path: /salud, port: http }   # precios no tiene dependencias: /salud basta
+            periodSeconds: 5
+          resources:                     # CORRECCIÓN: declarados, sin afinar: basta el orden de magnitud
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
+          securityContext:               # CORRECCIÓN: sin root, sin escalar privilegios, disco de solo lectura
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: precios                          # los demás pods lo llaman http://precios:3001
+  namespace: s11
+spec:
+  selector: { app: precios }             # CORRECCIÓN: la etiqueta que tienen los pods
+  ports:
+    - { name: http, port: 3001, targetPort: http }   # CORRECCIÓN: targetPort por nombre, no un número adivinado

@@ -1,0 +1,47 @@
+{
+  "stored": "ZGVtby1jbGF2ZS12MA==",
+  "envVar": true,
+  "envFile": false,
+  "procVar": true,
+  "specVar": false,
+  "specFile": false,
+  "fileFile": true,
+  "rot": [
+    {
+      "rotation": 1,
+      "file": [
+        66.8,
+        83.6
+      ],
+      "variable": [
+        null
+      ],
+      "variableAfterRestart": true,
+      "restartSecs": 3.8
+    },
+    {
+      "rotation": 2,
+      "file": [
+        26,
+        69.9
+      ],
+      "variable": [
+        null
+      ],
+      "variableAfterRestart": true,
+      "restartSecs": 3.5
+    },
+    {
+      "rotation": 3,
+      "file": [
+        57.5,
+        48.9
+      ],
+      "variable": [
+        null
+      ],
+      "variableAfterRestart": true,
+      "restartSecs": 13.1
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# "environment:" de Compose -> ConfigMap (ajustes sin secreto). Los secretos van en un Secret creado
+# por línea de comandos (ver README), nunca escrito en un archivo del repositorio.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: s11
+data:
+  PRECIOS_URL: "http://precios:3001"   # CORRECCIÓN: los valores son siempre texto: comillas también en números
+  MONEDA: "BOB"

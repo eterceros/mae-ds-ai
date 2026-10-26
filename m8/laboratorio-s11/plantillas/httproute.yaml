@@ -1,0 +1,21 @@
+# HTTPRoute: qué ruta va a qué Service. Esta sí la escribe el desarrollador.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  # TODO: el nombre de la ruta (por ejemplo, el nombre de su servicio).
+  name: TODO_NOMBRE_RUTA
+spec:
+  parentRefs:
+    # TODO: el Gateway al que se engancha esta ruta. Es el de gateway.yaml
+    # (metadata.name). Si el nombre no coincide, la ruta queda sin aceptar.
+    - name: TODO_NOMBRE_GATEWAY
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        # TODO: el nombre de SU Service (metadata.name en service.yaml).
+        - name: TODO_NOMBRE_SERVICIO
+          # TODO: el puerto del Service (spec.ports[].port), no el del contenedor.
+          port: TODO_PUERTO_SERVICIO

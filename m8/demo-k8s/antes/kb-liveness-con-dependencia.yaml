@@ -1,0 +1,67 @@
+# KB, antes: la misma api que despues/api.yaml con UN cambio: la liveness llama a /salud/listo,
+# que consulta a precios. Cuando precios cae, Kubernetes reinicia una api que estaba sana.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: s11
+  annotations:
+    # kind tiene un solo nodo: repartir réplicas entre nodos no es tarea del desarrollador aquí.
+    ignore-check.kube-linter.io/no-anti-affinity: "clúster kind de un solo nodo"
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: api }
+  template:
+    metadata:
+      labels: { app: api }                         # igual al selector
+    spec:
+      containers:
+        - name: api
+          image: s11-demo/api:1.0                  # etiqueta fija, no latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 3000 }
+          envFrom:
+            - configMapRef: { name: api-config }   # el ConfigMap se usa (PRECIOS_URL, MONEDA)
+          env:
+            - name: API_KEY_FILE                   # la app lee el secreto de un archivo, no de una variable
+              value: /etc/secretos/API_KEY
+          volumeMounts:
+            - { name: secretos, mountPath: /etc/secretos, readOnly: true }
+          # startup: da tiempo a un arranque lento antes de que la liveness empiece a contar.
+          startupProbe:
+            httpGet: { path: /salud/vivo, port: http }
+            periodSeconds: 1
+            failureThreshold: 30
+          # liveness: si falla, REINICIA el contenedor.
+          livenessProbe:
+            httpGet: { path: /salud/listo, port: http }  # MAL: la liveness depende de precios
+            periodSeconds: 5
+            failureThreshold: 3
+          # readiness: "¿puedo recibir tráfico ahora?". Si falla, el pod solo SALE del Service hasta
+          # que vuelva a pasar; no se reinicia nada. Las dependencias se miran aquí.
+          readinessProbe:
+            httpGet: { path: /salud/listo, port: http }
+            periodSeconds: 2
+            failureThreshold: 2
+          resources:                               # declarados, sin afinar
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: secretos
+          secret: { secretName: api-secretos }     # cada clave del Secret es un archivo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: s11
+spec:                                              # ClusterIP (el tipo por defecto); se entra por el Gateway
+  selector: { app: api }       # solo los pods LISTOS reciben tráfico
+  ports:
+    - { name: http, port: 80, targetPort: http }   # targetPort = el puerto con nombre del contenedor

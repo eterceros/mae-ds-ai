@@ -12,6 +12,9 @@ Este archivo reúne en un solo lugar las demos medidas del módulo y sus resulta
 | [`demo-docker/`](demo-docker/) | 8 | ¿Qué cambia en tamaño, CVE, privilegios, secretos y arranque al corregir un Dockerfile y un Compose escritos con apuro? | ver el [README de la demo](demo-docker/README.md) (K1-K7) | [7 archivos](#4-docker-y-compose-antes-y-después-sesión-8) |
 | [`demo-resiliencia/`](demo-resiliencia/) | 8 | ¿Qué protecciones en el código de una llamada (timeout, reintentos, breaker, bulkhead) evitan que un servicio lento o caído arrastre al que lo llama? | ≈ 30 min (`npm run medir`) | [1 archivo](#5-resiliencia-en-el-código-de-una-llamada-sesión-8) |
 | [`demo-mensajeria/`](demo-mensajeria/) | 8 | ¿Qué se pierde o se duplica entre Postgres y RabbitMQ, y cómo se evita (outbox, idempotencia, DLQ, cola para el LLM)? | ≈ 50 min (Q7 ≈ 30 min) | [7 archivos](#6-mensajería-con-postgres-y-rabbitmq-sesión-8) |
+| [`demo-k8s/`](demo-k8s/) | 11 | ¿Qué ven (y qué no) la validación contra el servidor y kube-linter en un manifiesto generado por IA, y qué hacen las probes, los Secrets y una HTTPRoute? | ver el [README de la demo](demo-k8s/README.md) (KA-KD; KB ≈ 30 min) | [5 archivos](#7-kubernetes-desde-el-desarrollador-sesión-11) |
+| [`demo-otel/`](demo-otel/) | 11 | ¿Cómo se pasa de «el p95 es alto» a «este span de `precios`» con OpenTelemetry, y dónde se corta la traza? | ≈ 14 min (`oa-od` ≈ 8 min, `ob-oc` ≈ 6 min) | [4 archivos](#8-opentelemetry-aplicado-sesión-11) |
+| [`demo-seguridad/`](demo-seguridad/) | 12 | ¿Qué deja pasar una API con OAuth 2 / OIDC ingenuo (BOLA, tokens manipulados, SSRF, servicios sin autenticar) y qué lo cierra? | ver el [README de la demo](demo-seguridad/README.md) (`npm run all`) | [7 archivos](#9-seguridad-de-apis-sesión-12) |
 
 **Advertencia común:** cada demo se midió en **una sola máquina** (un portátil con Intel Core i9-12900H, 20 hilos lógicos, 64 GB de RAM, Windows 11), con cliente y servidores juntos. Úsenlas como orden de magnitud y para ver **qué** cambia y **por qué**, no como cifras absolutas: en otro hardware, o con una red real entre máquinas, los números cambian y a veces también el orden.
 
@@ -374,3 +377,126 @@ De [`ESCENARIOS.md`](demo-mensajeria/results/ESCENARIOS.md) (24 de octubre de 20
 [`Q6_RETARDO.md`](demo-mensajeria/results/Q6_RETARDO.md) ·
 [`Q7_E4_LLM.md`](demo-mensajeria/results/Q7_E4_LLM.md) ·
 [`Q8_ASYNCAPI.md`](demo-mensajeria/results/Q8_ASYNCAPI.md)
+
+---
+
+## 7. Kubernetes desde el desarrollador (sesión 11)
+
+Carpeta: [`demo-k8s/`](demo-k8s/) · laboratorio relacionado: [`laboratorio-s11/`](laboratorio-s11/)
+
+**Modelo para la actividad 8 (manifiestos de Kubernetes, carpeta `k8s/`; se inicia en el laboratorio de la S11); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
+
+### Qué pregunta responde
+
+Dos servicios sin estado (`api` y `precios`) pasan de Compose a un clúster local kind con Deployment, Service, ConfigMap, Secret, probes, `requests/limits` y una HTTPRoute. Escenarios: KA (manifiesto generado por IA frente a `--dry-run=server` y kube-linter), KB (una liveness que consulta una dependencia), KC (Secret como variable o como archivo) y KD (HTTPRoute).
+
+### Cifras principales
+
+De [`ESCENARIOS.md`](demo-k8s/results/ESCENARIOS.md) (26 de octubre de 2026; KA 3 corridas, KB 3 por variante, KC 3 rotaciones, KD una vez):
+
+| Escenario | De `antes` a `despues` |
+|---|---|
+| KA. Manifiesto generado por IA | 7 errores del servidor en 3 rondas y 11 hallazgos de kube-linter; con los dos en verde (`ka-2`): 4 reinicios en 90 s, `precios` 0/1 listo, 0 de 200 peticiones correctas → 0 errores, 0 hallazgos, 200 de 200 |
+| KB. Liveness con dependencia (`precios` caído 90 s, 10 peticiones/s durante 240 s) | 8 reinicios (8–9); los 2 pods de vuelta en el Service tras 2 s (2–56 s) → 0 reinicios; los 2 pods de vuelta tras 0 s (0–2 s) |
+| KC. Secret | variable: valor visible en `env` y `/proc/1/environ`; tras rotar, no lo ve nunca (0 de 3 a los 180 s) sin reiniciar → archivo: no está en el entorno; tras rotar lo ve sin reiniciar en 62,2 s de mediana (26–83,6 s) |
+| KD. HTTPRoute | `Accepted` y `ResolvedRefs` en `True`; 200 de 200 respuestas `200`; 40 de 40 `404` en rutas no declaradas |
+
+KC, además: `base64 -d` devuelve el valor original sin ninguna clave (base64 no es cifrado), por eso el Secret se crea con `kubectl create secret … --from-literal` y no desde un archivo del repositorio; con `kubectl exec` el valor se lee igual de las dos formas ([`KC_SECRETOS.md`](demo-k8s/results/KC_SECRETOS.md)).
+
+### Conclusión
+
+- **Cada herramienta ve una capa.** El servidor y kube-linter no saben qué rutas expone la app ni en qué puerto escucha: hay que aplicar el manifiesto y mirar (`kubectl get pods`, `describe`, una petición real).
+- **La liveness no debe consultar dependencias:** una caída ajena se vuelve reinicios propios (8 en 90 s); la readiness solo saca al pod del Service.
+- **El Secret como archivo se actualiza solo** (≈ 1 min, lo fija el kubelet); como variable, solo al reiniciar el pod.
+
+### Advertencias
+
+- Una sola máquina (Intel Core i9-12900H, 64 GB, Windows 11, Docker Desktop con WSL2), un clúster kind de un solo nodo (Kubernetes 1.37.0). El controlador del Gateway (Envoy Gateway v1.9.2) lo instala el docente y no se explica en clase.
+- No se midieron latencia ni consumo de CPU/memoria (los `requests/limits` están declarados sin afinar), ni más de un nodo, ni otro controlador de Gateway. Ver «Qué no se midió» en `ESCENARIOS.md`.
+
+### Archivos de resultados
+
+[`ESCENARIOS.md`](demo-k8s/results/ESCENARIOS.md) ·
+[`KA_VALIDACION.md`](demo-k8s/results/KA_VALIDACION.md) ·
+[`KB_PROBES.md`](demo-k8s/results/KB_PROBES.md) ·
+[`KC_SECRETOS.md`](demo-k8s/results/KC_SECRETOS.md) ·
+[`KD_HTTPROUTE.md`](demo-k8s/results/KD_HTTPROUTE.md)
+
+---
+
+## 8. OpenTelemetry aplicado (sesión 11)
+
+Carpeta: [`demo-otel/`](demo-otel/)
+
+### Qué pregunta responde
+
+Una API de pedidos en NestJS 12 llama a `precios` (600 ms en 1 de cada 10 peticiones), guarda el pedido y su evento por outbox y lo publica en RabbitMQ para un worker. Escenarios: OA (con k6 solo se ve el p95; con trazas, dónde se va el tiempo), OB (la traza se corta en la outbox si no se lleva el contexto), OC (el `trace_id` en los logs y en Loki) y OD (del p95 de k6 a la traza más lenta, paso a paso).
+
+### Cifras principales
+
+De [`ESCENARIOS.md`](demo-otel/results/ESCENARIOS.md) (26 de octubre de 2026; 3 corridas por escenario, alternando `antes` y `despues`; mediana donde se indica):
+
+| Escenario | De `antes` a `despues` |
+|---|---|
+| OA. p95 alto (k6 a 20 pedidos/s durante 30 s, ~600 peticiones) | sin instrumentar: p50 9,9 ms, p95 606,0 ms (mediana de 3), y nada más → instrumentado: p50 11,7 ms, p95 606,9 ms; la traza más lenta muestra `precios` = 77-89 % del tiempo; de las 186 peticiones de más de 300 ms, 180 por `precios` (10 de ellas también con un `COMMIT` lento) y 6 solo por el `COMMIT` de Postgres |
+| OB. Traza por la outbox y la cola (100 pedidos con trace-id conocido) | con la auto-instrumentación sobre el código de la S08: 0 de 100 trazas completas; el worker queda en 100 trazas nuevas que empiezan en el relay → 100 de 100 completas (API → `precios` → Postgres → relay → RabbitMQ → worker, 14 spans) |
+| OC. Logs con trace id | API: 100/100 con el trace id correcto (lo arma a mano); worker: 0/100 (escribe el del relay); 0 líneas en Loki (`console.log`) → API y worker: 100/100 con el `trace_id` de la petición, sin código; 100/100 encontrados en Loki por `trace_id` |
+| OD. De la cifra a la traza (TraceQL con `duration >= p95`) | no hay trazas → 29-33 trazas por corrida (todas de esa prueba); la más lenta de Tempo es la más lenta de k6 en 3 de 3; la búsqueda tardó ~30-40 s en ver las trazas nuevas |
+
+Además, la API de `despues` sin el gancho ESM (`--experimental-loader`) pierde los spans de Express, el nombre de la ruta en el span (`POST` en vez de `POST /pedidos`) y el `trace_id` de los logs de pino (0 de 20); siguen los de HTTP, `fetch` y Postgres.
+
+### Conclusión
+
+- **El p95 dice que algo tarda, no qué:** la traza más lenta señala a `precios` (600 ms) y, en un 3 % de los casos lentos, al `COMMIT` de Postgres, que el p95 solo no muestra.
+- **La auto-instrumentación no lleva el contexto por una tabla:** con la outbox la traza se corta en el relay; se corrige con `propagation.inject` en la API y `propagation.extract` + `context.with` en el relay.
+- **Con pino instrumentado, cada log lleva el `trace_id` real** sin escribir una línea; `console.log` no llega a Loki.
+
+### Advertencias
+
+- Una sola máquina (Intel Core i9-12900H, 64 GB, Windows 11, Docker Desktop con WSL2). `grafana/otel-lgtm` es solo para desarrollo local.
+- El costo de instrumentar (p50 de ~10 a ~12 ms, exportación cada 5 s) no es un estudio de *overhead*. No se probó NestJS 11 con la instrumentación propia de Nest, ni el agente Java, ni muestreo, ni varias réplicas del relay o del worker. Ver «Qué no se midió» en `ESCENARIOS.md`.
+
+### Archivos de resultados
+
+[`ESCENARIOS.md`](demo-otel/results/ESCENARIOS.md) ·
+[`OA-OD_P95_A_TRAZA.md`](demo-otel/results/OA-OD_P95_A_TRAZA.md) ·
+[`OA_DESGLOSE.md`](demo-otel/results/OA_DESGLOSE.md) ·
+[`OB-OC_COLA_Y_LOGS.md`](demo-otel/results/OB-OC_COLA_Y_LOGS.md)
+
+---
+
+## 9. Seguridad de APIs (sesión 12)
+
+Carpeta: [`demo-seguridad/`](demo-seguridad/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-seguridad/DIFERENCIAS.md)
+
+**Modelo para la actividad 9 (seguridad de la API de su proyecto); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
+
+### Qué pregunta responde
+
+Una API de pedidos en NestJS protegida con Keycloak 26.8.1 local, en versión ingenua (`antes/`) y corregida (`despues/`): ¿qué deja pasar y qué lo cierra? Es material defensivo: todos los «ataques» son contra la propia demo.
+
+### Cifras principales
+
+De [`ESCENARIOS.md`](demo-seguridad/results/ESCENARIOS.md) (26 de octubre de 2026):
+
+| Escenario | De `antes` a `despues` |
+|---|---|
+| SA. BOLA | Alice lee 5/5 y modifica 5/5 pedidos de Bob → 0/5 y 0/5 (404; dueño comparado por `sub`) |
+| SB. Tokens manipulados | 6/6 aceptados → 0/6; el token válido da 200 en ambos. Anexo: reuso de un refresh token 200 con «Revoke Refresh Token» apagado → 400 encendido (y el R2 legítimo, también 400) |
+| SC. Límite por identidad | Bob recibe 10/10 `429` por culpa de Alice (límite por IP) → 0/10 (límite por `sub`) |
+| SD. SSRF | el secreto interno se filtra por 4 de 8 destinos internos (loopback, `localhost`, `0.0.0.0`, `[::ffff:127.0.0.1]`) → 0 filtrados y 8/8 bloqueados |
+| SE. Entre servicios | `precios` acepta las 3 llamadas → solo el token de servicio (sin token y token de usuario: 401) |
+
+### Advertencias
+
+- Una sola máquina (Intel Core i9-12900H, Windows, Docker Desktop con WSL2). Keycloak corre en `start-dev` con un realm de juguete. El fragmento de Spring Security no se ejecuta ni se mide. SD depende del sistema: en Linux o macOS `antes` puede filtrar por otras vías (`[::]`).
+
+### Archivos de resultados
+
+[`ESCENARIOS.md`](demo-seguridad/results/ESCENARIOS.md) ·
+[`SA_BOLA.md`](demo-seguridad/results/SA_BOLA.md) ·
+[`SB_TOKENS.md`](demo-seguridad/results/SB_TOKENS.md) ·
+[`SB_REFRESH.md`](demo-seguridad/results/SB_REFRESH.md) ·
+[`SC_RATELIMIT.md`](demo-seguridad/results/SC_RATELIMIT.md) ·
+[`SD_SSRF.md`](demo-seguridad/results/SD_SSRF.md) ·
+[`SE_SERVICIOS.md`](demo-seguridad/results/SE_SERVICIOS.md)

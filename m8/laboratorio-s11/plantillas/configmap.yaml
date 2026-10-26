@@ -1,0 +1,13 @@
+# ConfigMap: la configuración NO secreta de su servicio (lo que está en
+# `environment:` de su compose.yaml y no es una contraseña ni una clave).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # TODO: <nombre-del-servicio>-config; solo minúsculas, dígitos y guiones.
+  name: TODO_NOMBRE_SERVICIO-config
+data:
+  # TODO: una clave por cada variable de entorno que lee su servicio.
+  # Los valores son siempre texto: pongan entre comillas números y booleanos
+  # ("3000", "true"). Ejemplo:
+  # LOG_LEVEL: "info"
+  TODO_VARIABLE: "TODO_VALOR"

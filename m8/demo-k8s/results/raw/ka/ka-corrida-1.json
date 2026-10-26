@@ -1,0 +1,382 @@
+{
+  "rounds": [
+    {
+      "n": 1,
+      "errors": [
+        "(BadRequest) ConfigMap in version \"v1\" cannot be handled as a ConfigMap: json: cannot unmarshal bool into Go struct field ConfigMap.data of type string",
+        "(BadRequest) Secret in version \"v1\" cannot be handled as a Secret: illegal base64 data at input byte 4",
+        "(BadRequest) Deployment in version \"v1\" cannot be handled as a Deployment: quantities must match the regular expression '^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'",
+        "(Invalid) Service \"api\" is invalid: spec.ports[0].protocol: Unsupported value: \"HTTP\": supported values: \"SCTP\", \"TCP\", \"UDP\""
+      ],
+      "fixes": [
+        "ConfigMap: `DEBUG: true` → `\"true\"`",
+        "Secret: el valor de `data:` pasado a base64",
+        "Deployment api: `256mb` → `256Mi`",
+        "Service api: `protocol: HTTP` → `TCP`"
+      ]
+    },
+    {
+      "n": 2,
+      "errors": [
+        "(BadRequest) ConfigMap in version \"v1\" cannot be handled as a ConfigMap: json: cannot unmarshal number into Go struct field ConfigMap.data of type string",
+        "(BadRequest) Deployment in version \"v1\" cannot be handled as a Deployment: strict decoding error: unknown field \"spec.template.spec.containers[0].livenesProbe\""
+      ],
+      "fixes": [
+        "ConfigMap: `PORT: 3000` → `\"3000\"`",
+        "Deployment api: errata `livenesProbe` → `livenessProbe`"
+      ]
+    },
+    {
+      "n": 3,
+      "errors": [
+        "The Deployment \"api\" is invalid: spec.template.metadata.labels: Invalid value: {\"app\":\"api-server\"}: `selector` does not match template `labels`"
+      ],
+      "fixes": [
+        "Deployment api: etiqueta de la plantilla `api-server` → `api`"
+      ]
+    },
+    {
+      "n": 4,
+      "errors": [],
+      "fixes": []
+    }
+  ],
+  "lintRaw": [
+    {
+      "obj": "s11-ka/api /v1, Kind=Service",
+      "check": "dangling-service",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/api /v1, Kind=Service) no pods found matching service labels (map[app:api])"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "latest-tag",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) The container \"precios\" is using an invalid container image, \"s11-demo/precios\". Please use images that are not blocked by the `BlockList` criteria : [\".*:(latest)$\" \"^[^:]*$\" \"(.*/[^:]+)$\"]"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "no-read-only-root-fs",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" does not have a read-only root file system"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "run-as-non-root",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" is not set to runAsNonRoot"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "unset-cpu-requirements",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" has cpu request 0"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "unset-memory-requirements",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" has memory limit 0"
+    },
+    {
+      "obj": "s11-ka/precios /v1, Kind=Service",
+      "check": "dangling-service",
+      "line": "/m/ka-1-generado-por-ia.yaml: (object: s11-ka/precios /v1, Kind=Service) no pods found matching service labels (map[app:prices])"
+    }
+  ],
+  "lintClean": [
+    {
+      "obj": "s11-ka/api apps/v1, Kind=Deployment",
+      "check": "latest-tag",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/api apps/v1, Kind=Deployment) The container \"api\" is using an invalid container image, \"s11-demo/api:latest\". Please use images that are not blocked by the `BlockList` criteria : [\".*:(latest)$\" \"^[^:]*$\" \"(.*/[^:]+)$\"]"
+    },
+    {
+      "obj": "s11-ka/api apps/v1, Kind=Deployment",
+      "check": "no-anti-affinity",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/api apps/v1, Kind=Deployment) object has 2 replicas but does not specify inter pod anti-affinity"
+    },
+    {
+      "obj": "s11-ka/api apps/v1, Kind=Deployment",
+      "check": "no-read-only-root-fs",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/api apps/v1, Kind=Deployment) container \"api\" does not have a read-only root file system"
+    },
+    {
+      "obj": "s11-ka/api apps/v1, Kind=Deployment",
+      "check": "run-as-non-root",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/api apps/v1, Kind=Deployment) container \"api\" is not set to runAsNonRoot"
+    },
+    {
+      "obj": "s11-ka/api apps/v1, Kind=Deployment",
+      "check": "unset-cpu-requirements",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/api apps/v1, Kind=Deployment) container \"api\" has cpu request 0"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "latest-tag",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) The container \"precios\" is using an invalid container image, \"s11-demo/precios\". Please use images that are not blocked by the `BlockList` criteria : [\".*:(latest)$\" \"^[^:]*$\" \"(.*/[^:]+)$\"]"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "no-read-only-root-fs",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" does not have a read-only root file system"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "run-as-non-root",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" is not set to runAsNonRoot"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "unset-cpu-requirements",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" has cpu request 0"
+    },
+    {
+      "obj": "s11-ka/precios apps/v1, Kind=Deployment",
+      "check": "unset-memory-requirements",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/precios apps/v1, Kind=Deployment) container \"precios\" has memory limit 0"
+    },
+    {
+      "obj": "s11-ka/precios /v1, Kind=Service",
+      "check": "dangling-service",
+      "line": "/m/ka-1-tras-dry-run.yaml: (object: s11-ka/precios /v1, Kind=Service) no pods found matching service labels (map[app:prices])"
+    }
+  ],
+  "lintKa2": [],
+  "pods": [
+    {
+      "app": "api",
+      "ready": true,
+      "restarts": 2
+    },
+    {
+      "app": "api",
+      "ready": true,
+      "restarts": 2
+    },
+    {
+      "app": "precios",
+      "ready": false,
+      "restarts": 0
+    }
+  ],
+  "apiRestarts90": 4,
+  "loadKa2": {
+    "url": "http://api.s11-ka/cotizacion?producto=p1",
+    "total": 200,
+    "ok": 0,
+    "fail": 200,
+    "reasons": {
+      "ECONNREFUSED": 200
+    },
+    "sec": [
+      {
+        "s": 0,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 1,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 2,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 3,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 4,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 5,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 6,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 7,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 8,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 9,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 10,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 11,
+        "ok": 0,
+        "fail": 11
+      },
+      {
+        "s": 12,
+        "ok": 0,
+        "fail": 9
+      },
+      {
+        "s": 13,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 14,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 15,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 16,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 17,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 18,
+        "ok": 0,
+        "fail": 10
+      },
+      {
+        "s": 19,
+        "ok": 0,
+        "fail": 10
+      }
+    ]
+  },
+  "loadDespues": {
+    "url": "http://api.s11/cotizacion?producto=p1",
+    "total": 200,
+    "ok": 200,
+    "fail": 0,
+    "reasons": {},
+    "sec": [
+      {
+        "s": 0,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 1,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 2,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 3,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 4,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 5,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 6,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 7,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 8,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 9,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 10,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 11,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 12,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 13,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 14,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 15,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 16,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 17,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 18,
+        "ok": 10,
+        "fail": 0
+      },
+      {
+        "s": 19,
+        "ok": 10,
+        "fail": 0
+      }
+    ]
+  },
+  "unhealthy": [
+    "Liveness probe failed: HTTP probe failed with statuscode: 404",
+    "Readiness probe failed: Get \"http://10.244.0.20:3001/health\": dial tcp 10.244.0.20:3001: connect: connection refused",
+    "Readiness probe failed: HTTP probe failed with statuscode: 404"
+  ]
+}

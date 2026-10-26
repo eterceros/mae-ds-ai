@@ -1,0 +1,39 @@
+{
+  "name": "demo-seguridad",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S12): seguridad de APIs. BOLA, validación de JWT con JWKS (jose), tokens manipulados, límite por identidad, SSRF y autenticación entre servicios con client credentials; Keycloak 26.8.1 local y una API NestJS mínima.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "up": "docker compose up -d --wait",
+    "down": "docker compose down -v",
+    "build": "tsc -p tsconfig.api.json && node -e \"require('fs').writeFileSync('dist/package.json','{\\\"type\\\":\\\"commonjs\\\"}\\n')\"",
+    "api": "node --no-warnings dist/lib/main.js",
+    "precios": "node --no-warnings src/sim/precios.ts",
+    "internal": "node --no-warnings src/sim/internal.ts",
+    "sa": "node --no-warnings scripts/sa-bola.ts",
+    "sb": "node --no-warnings scripts/sb-tokens.ts",
+    "sb-refresh": "node --no-warnings scripts/sr-refresh.ts",
+    "sc": "node --no-warnings scripts/sc-ratelimit.ts",
+    "sd": "node --no-warnings scripts/sd-ssrf.ts",
+    "se": "node --no-warnings scripts/se-servicios.ts",
+    "all": "node --no-warnings scripts/run-all.ts",
+    "typecheck": "tsc -p tsconfig.api.json --noEmit && tsc -p tsconfig.scripts.json --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.6",
+    "@nestjs/core": "11.1.6",
+    "@nestjs/platform-express": "11.1.6",
+    "jose": "6.1.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.3",
+    "@types/node": "24.19.2",
+    "typescript": "5.9.3"
+  }
+}

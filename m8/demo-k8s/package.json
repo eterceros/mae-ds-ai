@@ -1,0 +1,18 @@
+{
+  "name": "demo-k8s",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S11): Kubernetes desde el desarrollador en kind; manifiesto generado por IA validado con --dry-run=server y kube-linter, liveness frente a readiness, Secret como variable o archivo y HTTPRoute de Gateway API, con cifras medidas.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "images": "docker build -t s11-demo/api:1.0 app/api && docker build -t s11-demo/precios:1.0 app/precios",
+    "gateway": "node --no-warnings scripts/instalar-gateway.ts",
+    "ka": "node --no-warnings scripts/ka-validar.ts",
+    "kb": "node --no-warnings scripts/kb-probes.ts",
+    "kc": "node --no-warnings scripts/kc-secretos.ts",
+    "kd": "node --no-warnings scripts/kd-ruta.ts"
+  }
+}

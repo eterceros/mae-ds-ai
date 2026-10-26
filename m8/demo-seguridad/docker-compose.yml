@@ -1,0 +1,32 @@
+# Demo de seguridad de APIs (M8, S12). Keycloak en start-dev con el realm importado.
+# Escucha solo en 127.0.0.1 y en el rango 18600-18649. Proyecto Compose: s12-sec.
+# Levantar:  docker compose up -d --wait
+# Borrar todo (contenedor y datos en memoria): docker compose down -v
+#
+# La API NestJS (antes/despues), el servicio "precios", el servicio interno simulado y los scripts
+# de medición corren en el ANFITRIÓN con Node 24 (ver package.json y README). Así el "iss" del token
+# y la URL del JWKS coinciden siempre (http://127.0.0.1:18600/realms/demo) sin trucos de red de Docker.
+name: s12-sec
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.1
+    command: ["start-dev", "--import-realm", "--http-port=8080"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      # El token lleva como "iss" el origen por el que se pidió; lo fijamos al puerto publicado
+      # para que coincida con lo que valida la API en el anfitrión.
+      KC_HOSTNAME: http://127.0.0.1:18600
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "false"
+    ports: ["127.0.0.1:18600:8080"]
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import:ro
+    healthcheck:
+      # Keycloak expone /health en el puerto de gestión (9000, dentro del contenedor; no se publica) cuando KC_HEALTH_ENABLED=true.
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q UP"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+      start_period: 20s

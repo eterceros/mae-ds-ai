@@ -1,0 +1,287 @@
+[
+ {
+  "service": "relay",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-amqplib",
+  "name": "publish <default>",
+  "kind": "PRODUCER",
+  "spanId": "4e829e0812fe2e73",
+  "parentId": "395f3145147780d6",
+  "start": 1793008930057,
+  "end": 1793008930095.353,
+  "ms": 38.35302734375,
+  "attrs": {
+   "messaging.protocol_version": "0.9.1",
+   "messaging.url": "amqp://demo:***@rabbitmq:5672?heartbeat=10",
+   "messaging.protocol": "AMQP",
+   "messaging.system": "rabbitmq",
+   "messaging.destination": "",
+   "messaging.destination_kind": "topic",
+   "messaging.rabbitmq.routing_key": "pedidos.despues",
+   "server.address": "rabbitmq",
+   "server.port": 5672
+  }
+ },
+ {
+  "service": "worker",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-amqplib",
+  "name": "pedidos.despues process",
+  "kind": "CONSUMER",
+  "spanId": "13aaf10fd5a81b65",
+  "parentId": "4e829e0812fe2e73",
+  "start": 1793008930095,
+  "end": 1793008930114.68,
+  "ms": 19.679931640625,
+  "attrs": {
+   "messaging.protocol_version": "0.9.1",
+   "messaging.url": "amqp://demo:***@rabbitmq:5672?heartbeat=10",
+   "messaging.protocol": "AMQP",
+   "messaging.system": "rabbitmq",
+   "messaging.destination": "",
+   "messaging.destination_kind": "topic",
+   "messaging.rabbitmq.routing_key": "pedidos.despues",
+   "messaging.operation": "process",
+   "server.address": "rabbitmq",
+   "server.port": 5672
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-pg",
+  "name": "pg-pool.connect",
+  "kind": "CLIENT",
+  "spanId": "f39a37e97723ce09",
+  "parentId": "395f3145147780d6",
+  "start": 1793008929826,
+  "end": 1793008929826.173,
+  "ms": 0.173095703125,
+  "attrs": {
+   "db.postgresql.idle.timeout.millis": 10000,
+   "db.system.name": "postgresql",
+   "db.namespace": "pedidos",
+   "server.address": "postgres",
+   "server.port": 5432
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-pg",
+  "name": "pg.query:BEGIN pedidos",
+  "kind": "CLIENT",
+  "spanId": "dfdd28b66ccd4d88",
+  "parentId": "395f3145147780d6",
+  "start": 1793008929826,
+  "end": 1793008929826.578,
+  "ms": 0.577880859375,
+  "attrs": {
+   "db.system.name": "postgresql",
+   "db.namespace": "pedidos",
+   "db.query.text": "BEGIN",
+   "server.address": "postgres",
+   "server.port": 5432
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-pg",
+  "name": "pg.query:INSERT pedidos",
+  "kind": "CLIENT",
+  "spanId": "b95a921484a428a2",
+  "parentId": "395f3145147780d6",
+  "start": 1793008929827,
+  "end": 1793008929827.509,
+  "ms": 0.509033203125,
+  "attrs": {
+   "db.system.name": "postgresql",
+   "db.namespace": "pedidos",
+   "db.query.text": "INSERT INTO despues.pedidos (id, sku, cantidad, total_cents) VALUES ($1, $2, $3, $4)",
+   "server.address": "postgres",
+   "server.port": 5432
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-pg",
+  "name": "pg.query:INSERT pedidos",
+  "kind": "CLIENT",
+  "spanId": "23b0c83ce4b79c87",
+  "parentId": "395f3145147780d6",
+  "start": 1793008929827,
+  "end": 1793008929827.364,
+  "ms": 0.364013671875,
+  "attrs": {
+   "db.system.name": "postgresql",
+   "db.namespace": "pedidos",
+   "db.query.text": "INSERT INTO despues.outbox (pedido_id, payload, headers) VALUES ($1, $2, $3)",
+   "server.address": "postgres",
+   "server.port": 5432
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-pg",
+  "name": "pg.query:COMMIT pedidos",
+  "kind": "CLIENT",
+  "spanId": "45d7c705fde8a4b9",
+  "parentId": "395f3145147780d6",
+  "start": 1793008929828,
+  "end": 1793008930003.173,
+  "ms": 175.173095703125,
+  "attrs": {
+   "db.system.name": "postgresql",
+   "db.namespace": "pedidos",
+   "db.query.text": "COMMIT",
+   "server.address": "postgres",
+   "server.port": 5432
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-http",
+  "name": "POST /pedidos",
+  "kind": "SERVER",
+  "spanId": "75b400469ec14606",
+  "parentId": "d5d4988715cb6ec9",
+  "start": 1793008929223,
+  "end": 1793008930003.387,
+  "ms": 780.386962890625,
+  "attrs": {
+   "url.scheme": "http",
+   "network.peer.address": "172.23.0.13",
+   "network.peer.port": 59412,
+   "network.protocol.version": "1.1",
+   "user_agent.original": "Grafana k6/2.3.0",
+   "client.address": "172.23.0.13",
+   "http.request.method": "POST",
+   "http.response.status_code": 201,
+   "url.path": "/pedidos",
+   "server.address": "api-despues",
+   "server.port": 3000,
+   "http.route": "/pedidos"
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-express",
+  "name": "middleware - <anonymous>",
+  "kind": "INTERNAL",
+  "spanId": "c16b6e54ec82a366",
+  "parentId": "75b400469ec14606",
+  "start": 1793008929223,
+  "end": 1793008929223.045,
+  "ms": 0.044921875,
+  "attrs": {
+   "express.name": "<anonymous>",
+   "express.type": "middleware"
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-express",
+  "name": "middleware - jsonParser",
+  "kind": "INTERNAL",
+  "spanId": "fd7d09a1307ff443",
+  "parentId": "75b400469ec14606",
+  "start": 1793008929223,
+  "end": 1793008929223.275,
+  "ms": 0.27490234375,
+  "attrs": {
+   "express.name": "jsonParser",
+   "express.type": "middleware"
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-express",
+  "name": "middleware - urlencodedParser",
+  "kind": "INTERNAL",
+  "spanId": "ddd8fa21465db157",
+  "parentId": "75b400469ec14606",
+  "start": 1793008929224,
+  "end": 1793008929224.024,
+  "ms": 0.02392578125,
+  "attrs": {
+   "express.name": "urlencodedParser",
+   "express.type": "middleware"
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-express",
+  "name": "request handler - /pedidos",
+  "kind": "INTERNAL",
+  "spanId": "395f3145147780d6",
+  "parentId": "75b400469ec14606",
+  "start": 1793008929224,
+  "end": 1793008930003.677,
+  "ms": 779.677001953125,
+  "attrs": {
+   "express.name": "/pedidos",
+   "express.type": "request_handler",
+   "http.route": "/pedidos"
+  }
+ },
+ {
+  "service": "api",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-undici",
+  "name": "GET",
+  "kind": "CLIENT",
+  "spanId": "b6e15f375def83fe",
+  "parentId": "395f3145147780d6",
+  "start": 1793008929224,
+  "end": 1793008929825.168,
+  "ms": 601.16796875,
+  "attrs": {
+   "http.request.method_original": "GET",
+   "url.full": "http://precios-despues:3000/precios/sku-36",
+   "url.query": "",
+   "url.scheme": "http",
+   "user_agent.original": "node",
+   "network.peer.address": "172.23.0.9",
+   "network.peer.port": 3000,
+   "network.protocol.version": "1.1",
+   "http.request.method": "GET",
+   "http.response.status_code": 200,
+   "url.path": "/precios/sku-36",
+   "server.address": "precios-despues",
+   "server.port": 3000
+  }
+ },
+ {
+  "service": "precios",
+  "namespace": "despues",
+  "scope": "@opentelemetry/instrumentation-http",
+  "name": "GET",
+  "kind": "SERVER",
+  "spanId": "9085054dbf2c6f61",
+  "parentId": "b6e15f375def83fe",
+  "start": 1793008929225,
+  "end": 1793008929825.213,
+  "ms": 600.212890625,
+  "attrs": {
+   "url.scheme": "http",
+   "network.peer.address": "172.23.0.12",
+   "network.peer.port": 54288,
+   "network.protocol.version": "1.1",
+   "user_agent.original": "node",
+   "client.address": "172.23.0.12",
+   "http.request.method": "GET",
+   "http.response.status_code": 200,
+   "url.path": "/precios/sku-36",
+   "server.address": "precios-despues",
+   "server.port": 3000
+  }
+ }
+]

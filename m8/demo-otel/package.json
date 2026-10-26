@@ -1,0 +1,38 @@
+{
+  "name": "demo-otel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo del docente (M8, S11): OpenTelemetry aplicado con auto-instrumentacion (SDK JS 3.0) en NestJS 12; api -> precios (HTTP) y api -> outbox -> RabbitMQ -> worker; trazas en grafana/otel-lgtm 0.38; del p95 de k6 a la traza mas lenta.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
+    "up": "docker compose up -d --build --wait",
+    "down": "docker compose --profile load down -v",
+    "oa-od": "node --no-warnings scripts/oa-od.ts",
+    "oa-desglose": "node --no-warnings scripts/oa-desglose.ts",
+    "ob-oc": "node --no-warnings scripts/ob-oc.ts",
+    "lenta": "node --no-warnings scripts/lenta.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "12.2.0",
+    "@nestjs/core": "12.2.0",
+    "@nestjs/platform-express": "12.2.0",
+    "@opentelemetry/api": "1.10.0",
+    "@opentelemetry/auto-instrumentations-node": "0.82.0",
+    "amqplib": "2.2.0",
+    "pg": "8.23.1",
+    "pino": "10.4.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@types/amqplib": "0.10.8",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "typescript": "6.0.3"
+  }
+}
