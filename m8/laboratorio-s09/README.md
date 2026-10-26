@@ -224,7 +224,7 @@ En vez de inscripciones, importen una entidad de **su** proyecto (productos, cli
 1. Escriban un generador con **semilla fija** (pueden adaptar `generate.ts` o `generate.py`) que produzca al menos **50 000 filas** y **500 000** para la prueba de memoria, con los mismos tipos de errores: ≈ 3 % inválidas (al menos fecha mal escrita, un campo con formato inválido, un número fuera de rango, campo vacío y columnas de más) y ≈ 1 % repetidas por el id externo.
 2. La tabla destino es la de su producto, con una **clave única** por el id que viene del sistema de origen. Si no la tiene, agréguenla con una **migración** (S06), no a mano.
 3. Usen como versión ingenua un importador equivalente al de esta carpeta (todo en memoria, fila por fila, una transacción), adaptado a su tabla, y midan las dos versiones igual que en la opción A.
-4. Pueden usar el Postgres de este `compose.yaml` o el de su propio `compose.yaml` (la actividad 7). Anoten cuál.
+4. Pueden usar el Postgres de este `compose.yaml` o el de su propio `compose.yaml` (la actividad 5). Anoten cuál.
 
 ---
 

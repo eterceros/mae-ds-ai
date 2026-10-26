@@ -269,7 +269,7 @@ De [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md) (24 de octubre de 2026):
 
 ### Para qué les sirve
 
-- **Actividad 7 (`compose.yaml`):** `despues/compose.yaml` es el modelo de healthcheck, `depends_on` con condición y migraciones como servicio.
+- **Actividad 5 (`compose.yaml`):** `despues/compose.yaml` es el modelo de healthcheck, `depends_on` con condición y migraciones como servicio.
 - **Laboratorio de la S08:** [`laboratorio-s08/`](laboratorio-s08/) (auditar/adelgazar la imagen o Podman; entregable `docs/laboratorios/imagen-o-podman.md`, fecha sugerida: domingo 1 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59). La demo es material de apoyo para comparar, no para copiar.
 
 ### Advertencias
