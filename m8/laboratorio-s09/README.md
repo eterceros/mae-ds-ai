@@ -5,7 +5,7 @@ Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9 (viernes 30 de oc
 - **En clase:** 45 minutos, después del bloque de integración con sistemas externos. Lo que no terminen en clase lo completan en casa.
 - **Quién:** cada grupo. Elijan **una** opción: **A** (el CSV y el Postgres de esta carpeta) o **B** (datos de su propio producto).
 - **Qué se hace:** parten de una **versión ingenua** de un importador (dada, en Node y en Python), escriben **su versión mejorada** y miden las dos con las mismas medidas.
-- **Entrega:** el archivo `docs/laboratorios/importacion.md` en el repositorio del grupo, con el código de su versión mejorada en el mismo repositorio, hasta el **miércoles 11 de noviembre, 23:59**. La plantilla está al final de esta página.
+- **Entrega:** el archivo `docs/laboratorios/importacion.md` en el repositorio del grupo, con el código de su versión mejorada en el mismo repositorio, **fecha sugerida: miércoles 11 de noviembre, 23:59**; se reciben hasta el vie 13 nov, 23:59. La plantilla está al final de esta página.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA, ni para escribir el importador ni para leer los resultados. La idea es que cada uno vea dónde se rompe una carga de datos y por qué.
 
 ## Antes de empezar

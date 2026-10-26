@@ -4,7 +4,7 @@ Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 8 (miércoles 28 de
 
 - **En clase:** 25 minutos, justo después del bloque de Docker y Compose.
 - **Quién:** cada integrante o el grupo completo elige **una** opción: **A** (auditar y adelgazar la imagen de su servicio) o **B** (levantar su stack con Podman). Pueden repartirse: unos hacen A y otros B.
-- **Entrega:** el archivo `docs/laboratorios/imagen-o-podman.md` en el repositorio del grupo, hasta el **domingo 1 de noviembre, 23:59** (junto con la actividad 7). La plantilla está al final de esta página.
+- **Entrega:** el archivo `docs/laboratorios/imagen-o-podman.md` en el repositorio del grupo, **fecha sugerida: domingo 1 de noviembre, 23:59** (junto con la actividad 7); se reciben hasta el vie 13 nov, 23:59. La plantilla está al final de esta página.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA (ni para escribir el Dockerfile ni para leer los resultados). La idea es que cada uno vea con sus propios ojos qué hay dentro de su imagen y qué cambia al correr sin Docker.
 - **Material de apoyo:** la demo del docente [`../demo-docker/`](../demo-docker/) tiene un Dockerfile de antes y uno de después para la misma API, con las cifras medidas ([`DIFERENCIAS.md`](../demo-docker/DIFERENCIAS.md)). Úsenla para comparar, no para copiar a ciegas: su proyecto no es esa API.
 

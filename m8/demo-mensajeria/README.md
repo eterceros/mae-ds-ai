@@ -47,7 +47,7 @@ El código está en dos carpetas para comparar la mala práctica con su correcci
 | **Q7** (`antes/llm-api.ts` frente a `despues/llm-api.ts` + `llm-worker.ts`) | E4: LLM síncrono frente a `202` + recurso de estado + cola + worker, con k6 y matando el worker | Timeouts en cascada frente a cola que absorbe; nada se pierde al matar el worker |
 | **Q8** | `asyncapi.yaml` 3.1 validado con la CLI, `diff` de cambios incompatibles y mensajes reales contra el esquema | El contrato como prueba, no como documento |
 
-Además, en Q3-Q4 y Q7 se comprueba que la cabecera `traceparent` (W3C Trace Context) viaja de la petición HTTP a la outbox, al mensaje AMQP y al worker con el mismo *trace-id* (sin OpenTelemetry; eso es la sesión 10).
+Además, en Q3-Q4 y Q7 se comprueba que la cabecera `traceparent` (W3C Trace Context) viaja de la petición HTTP a la outbox, al mensaje AMQP y al worker con el mismo *trace-id* (sin OpenTelemetry; eso es la sesión 11, mié 4 nov).
 
 ## Requisitos
 
