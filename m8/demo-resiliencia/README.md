@@ -2,7 +2,7 @@
 
 Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 8
 
-> **Es una demostración del docente.** No hay nada que entregar ni que ejecutar. Se publica para que puedan repasarla después de la clase y reproducirla si quieren. No necesita claves ni tokens de ningún servicio.
+> **Es una demostración del docente.** No hay nada que entregar ni que ejecutar. Se publica para que puedan repasarla después de la clase y reproducirla si quieren. No necesita claves ni tokens de ningún servicio. Para armar su experimento **E3**, vean [qué copiar a su proyecto](#para-el-experimento-e3-qué-copiar-a-su-proyecto).
 
 ## Qué muestra
 
@@ -131,11 +131,26 @@ Medidos el 24 de octubre de 2026 en un portátil (Intel Core i9-12900H, 20 hilos
 
 **R3. Los reintentos convierten errores pasajeros en éxitos, y los pagan con carga.** Como cada intento cae en una conexión nueva, la probabilidad de que los 3 sean malos es 0,2³ = 0,8 %; se midió 0,9 % y 0,7 %. El precio es un 25 % más de llamadas a B (1,26 por petición) y un p95 de 352 ms (un intento perdido más la espera). Solo vale para operaciones **idempotentes**: aquí todas son `GET`. Y si B falla porque está saturado, ese 25 % extra empeora su problema: por eso los reintentos van acotados.
 
-**R4. Reintentar enseguida no sirve; sin jitter, los reintentos llegan en ráfagas.** El cliente de `antes/` gasta sus 6 intentos en unos 150 ms, mucho antes de que B se recupere al segundo: 100 % de errores y 300 llamadas a B en 200 ms. Con backoff exponencial todos llegan a B cuando ya volvió (0 % de errores), pero como todos esperan lo mismo, llegan **juntos**: cuatro ráfagas de 50 llamadas, cada una dentro del mismo intervalo de 50 ms (la primera tanda y tres de reintentos) (la serie en el tiempo está en `results/ESCENARIOS.md`). Con jitter se reparten (19 como máximo con jitter completo). El jitter completo tiene un costo que no siempre se cuenta: algunas esperas al azar salen cortas, esos clientes agotan sus intentos antes de que B vuelva (2 % de errores) y B recibe más llamadas (254 frente a 200). El jitter «igual» queda en medio: 0 % de errores y picos de 28.
+**R4. Reintentar enseguida no sirve; sin jitter, los reintentos llegan en ráfagas.** El cliente de `antes/` gasta sus 6 intentos en unos 150 ms, mucho antes de que B se recupere al segundo: 100 % de errores y 300 llamadas a B en 200 ms. Con backoff exponencial todos llegan a B cuando ya volvió (0 % de errores), pero como todos esperan lo mismo, llegan **juntos**: cuatro ráfagas de 50 llamadas, cada una dentro del mismo intervalo de 50 ms : la primera tanda y tres de reintentos (la serie en el tiempo está en `results/ESCENARIOS.md`). Con jitter se reparten (19 como máximo con jitter completo). El jitter completo tiene un costo que no siempre se cuenta: algunas esperas al azar salen cortas, esos clientes agotan sus intentos antes de que B vuelva (2 % de errores) y B recibe más llamadas (254 frente a 200). El jitter «igual» queda en medio: 0 % de errores y picos de 28.
 
 **R5. El breaker deja de llamar a un B que no responde, y su ventana decide cuándo.** Con B colgado y sin breaker, cada petición espera los 500 ms del plazo y A le lanza a B 500 llamadas que van a fallar. Con breaker y ventana de 2 s, abre a los 1,4 s: las peticiones fallan en 0,7 ms y B recibe solo 74 (las de antes de abrir y una de prueba cada 2 s). Con la ventana de 10 s, que es el valor por omisión de opossum, abre recién a los 5 s: el porcentaje de fallos se calcula sobre los últimos 10 s, y la mitad fueron buenos. Con B **caído** (conexión rechazada) fallar ya es rápido sin breaker (p50 1,6 ms); lo que ahorra ahí es carga sobre B (55 llamadas en vez de 500). El precio, en los dos casos: cuando B vuelve, el circuito sigue abierto hasta la siguiente llamada de prueba, y entre el 10 y el 20 % de las peticiones de los 10 s siguientes fallan sin necesidad (0 % sin breaker). Ese es el compromiso de `resetTimeout`.
 
 **R6. Sin compartimentos, la dependencia lenta se lleva a la sana.** Las dos rutas comparten 20 conexiones salientes. La lenta necesita unas 60 a la vez (30 pet/s × 2 s), ocupa el pool entero, y la rápida, cuyo B está perfecto, espera una conexión hasta vencer su plazo: 95,7 % de errores. Con un límite de 10 llamadas a la vez en la ruta lenta, siempre quedan 10 conexiones para la rápida: 0 % de errores y p95 de 3,9 ms. La ruta lenta rechaza al instante lo que sobra (503 en ~1 ms), que es mejor que tenerlo esperando 2,5 s para fallar igual. En Node el bucle de eventos no se bloquea esperando a B, pero los pools sí se agotan (conexiones salientes, pool de la base de datos); en Java con hilos bloqueantes, lo que se agota son los hilos del servidor.
+
+## Para el experimento E3: qué copiar a su proyecto
+
+E3 (actividad 6) lo hace cada grupo sobre **su** proyecto: compara un módulo dentro del monolito modular con el mismo módulo extraído a un servicio, mientras se hace fallar ese servicio a propósito. **Esta demo no es un E3 completo:** muestra solo la forma extraída (A y B ya son dos servicios), está escrita sobre `node:http` y no sobre NestJS, y no tiene la variante «en proceso». Sirve para copiar las piezas que no dependen del *framework*:
+
+| Paso de E3 | Qué copiar de esta demo | Qué ajustar en su proyecto |
+|---|---|---|
+| 1 · Las dos formas del módulo | No está en la demo | Una interfaz con dos implementaciones (en proceso y por HTTP), elegidas por una variable de entorno, como en las diapositivas 37 y 38 de la S08. El módulo extraído puede ser la misma imagen con otro punto de entrada (otro `main`) |
+| 2 · Toxiproxy entre su API y el módulo | El servicio `toxiproxy` de [`docker-compose.yml`](docker-compose.yml) y [`toxiproxy/toxiproxy.json`](toxiproxy/toxiproxy.json) | En `upstream`, el nombre y el puerto de su módulo; en su API, la URL del módulo apunta a `toxiproxy`, no al módulo |
+| 3 · Carga con la caída provocada y fases | [`k6/carga.js`](k6/carga.js) con [`k6/comun.js`](k6/comun.js): ritmo fijo, caída a los 10 s y etiqueta `fase` | La URL y la ruta. Agreguen una segunda ruta, una que **no** use el módulo, con su etiqueta `ruta`, como hace [`k6/dos-rutas.js`](k6/dos-rutas.js) |
+| k6 sin instalarlo | El servicio `k6` del compose (`docker compose run --rm k6 run …`) | El volumen, apuntando a su carpeta `bench/e3/` |
+| Las protecciones de la forma extraída | [`src/despues/cliente-b.ts`](src/despues/cliente-b.ts) (plazo y reintentos), [`breaker.ts`](src/despues/breaker.ts) y [`bulkhead.ts`](src/despues/bulkhead.ts) | En NestJS van dentro de la clase que llama al módulo por HTTP |
+| Cómo reportar | [`results/ESCENARIOS.md`](results/ESCENARIOS.md): mediana por fase | E3 pide 5 corridas o más por forma, con mediana **y** rango |
+
+Las hipótesis, el informe y el ADR no están en esta demo: el formato se ve en las diapositivas 43 y 46 de la S08.
 
 ## Problemas encontrados al armar la demo
 
