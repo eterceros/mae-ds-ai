@@ -1,0 +1,3 @@
+[
+  { "name": "precios", "listen": "0.0.0.0:8666", "upstream": "precios:3001", "enabled": true }
+]

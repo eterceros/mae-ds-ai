@@ -1,0 +1,14 @@
+# Lo que no debe viajar al contexto de build (ni terminar en la imagen).
+node_modules
+dist
+resultados
+k6
+toxiproxy
+formas
+bench
+docs
+*.md
+.env
+.env.*
+*.log
+.git

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# Resúmenes de k6 (los escribe k6/comun.js). Fuera de git en esta plantilla.
+resultados/

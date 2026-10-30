@@ -143,7 +143,7 @@ E3 (actividad 6) lo hace cada grupo sobre **su** proyecto: compara un módulo de
 
 | Paso de E3 | Qué copiar de esta demo | Qué ajustar en su proyecto |
 |---|---|---|
-| 1 · Las dos formas del módulo | No está en la demo | Una interfaz con dos implementaciones (en proceso y por HTTP), elegidas por una variable de entorno, como en las diapositivas 37 y 38 de la S08. El módulo extraído puede ser la misma imagen con otro punto de entrada (otro `main`) |
+| 1 · Las dos formas del módulo | No está en esta demo: está en la plantilla [`../demo-e3-nest/`](../demo-e3-nest/), en NestJS (interfaz, dos implementaciones, segundo `main` y el compose con Toxiproxy y k6) | Una interfaz con dos implementaciones (en proceso y por HTTP), elegidas por una variable de entorno, como en las diapositivas 37 y 38 de la S08. El módulo extraído puede ser la misma imagen con otro punto de entrada (otro `main`) |
 | 2 · Toxiproxy entre su API y el módulo | El servicio `toxiproxy` de [`docker-compose.yml`](docker-compose.yml) y [`toxiproxy/toxiproxy.json`](toxiproxy/toxiproxy.json) | En `upstream`, el nombre y el puerto de su módulo; en su API, la URL del módulo apunta a `toxiproxy`, no al módulo |
 | 3 · Carga con la caída provocada y fases | [`k6/carga.js`](k6/carga.js) con [`k6/comun.js`](k6/comun.js): ritmo fijo, caída a los 10 s y etiqueta `fase` | La URL y la ruta. Agreguen una segunda ruta, una que **no** use el módulo, con su etiqueta `ruta`, como hace [`k6/dos-rutas.js`](k6/dos-rutas.js) |
 | k6 sin instalarlo | El servicio `k6` del compose (`docker compose run --rm k6 run …`) | El volumen, apuntando a su carpeta `bench/e3/` |

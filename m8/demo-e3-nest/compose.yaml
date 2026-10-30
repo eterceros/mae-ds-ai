@@ -1,0 +1,64 @@
+# Plantilla para E3 (M8, S08): la API con el módulo de precios en sus dos formas.
+# Solo escucha en 127.0.0.1, puertos 18300-18399.
+#
+# La forma se elige con un archivo de variables (el mismo flag en todos los comandos):
+#   docker compose --env-file formas/proceso.env up -d --build --wait   monolito modular: solo "api"
+#   docker compose --env-file formas/http.env    up -d --build --wait   extraído: api -> toxiproxy -> precios
+#   docker compose --profile "*" down -v                                borra todo, de cualquiera de las dos formas
+# (Un "down" sin perfiles deja vivos a precios y toxiproxy: solo borra los servicios de los perfiles activos.)
+# formas/http.env activa el perfil "extraido" (COMPOSE_PROFILES), que agrega "precios" y "toxiproxy".
+name: e3-nest
+
+services:
+  api:
+    build: .
+    image: e3-nest/app:local
+    command: ["node", "dist/main.js"]
+    environment:
+      # proceso = PreciosEnProceso (llamada directa); http = PreciosHttp (por la red)
+      PRECIOS_MODO: ${PRECIOS_MODO:-proceso}
+      # La API llama al proxy, no a precios: así Toxiproxy le puede romper la red.
+      PRECIOS_URL: http://toxiproxy:8666
+    ports: ["127.0.0.1:18300:3000"]
+    depends_on:
+      # required: false -> en la forma "proceso" estos servicios no existen (perfil apagado)
+      # y Compose no los espera; en la forma "http" espera a que estén listos.
+      precios: { condition: service_healthy, required: false }
+      toxiproxy: { condition: service_started, required: false }
+    healthcheck:
+      # La imagen slim no trae curl; node sí. /salud no toca a precios.
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/salud').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  precios:
+    # La misma imagen que la API, con el otro punto de entrada: solo el módulo de precios.
+    image: e3-nest/app:local
+    profiles: ["extraido"]
+    command: ["node", "dist/main-precios.js"]
+    ports: ["127.0.0.1:18301:3001"] # para probarlo a mano; la API no usa este puerto
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/salud').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  toxiproxy:
+    # Proxy TCP que se controla por su API: cuelga o corta las conexiones hacia precios.
+    image: ghcr.io/shopify/toxiproxy:2.13.0@sha256:5d3dae09bc185dcc5ff6cf43abf6062a4a720aff0c4306a471e773acdcd107aa
+    profiles: ["extraido"]
+    command: ["-host=0.0.0.0", "-config=/config/toxiproxy.json"]
+    environment: { LOG_LEVEL: error } # sin esto escribe una línea por conexión
+    volumes: ["./toxiproxy/toxiproxy.json:/config/toxiproxy.json:ro"]
+    ports: ["127.0.0.1:18310:8474"] # API de Toxiproxy
+    depends_on:
+      precios: { condition: service_healthy }
+
+  k6:
+    # Solo con "docker compose run --rm k6 run ..." (perfil "carga"; no arranca con up).
+    image: grafana/k6:2.3.0@sha256:2dd4756ec6e14e62778916e1eb850108e4b499304c02df56760fa0bdb0fba0b8
+    profiles: ["carga"]
+    volumes:
+      - ./k6:/k6:ro
+      - ./resultados:/out # aquí deja k6 el resumen JSON de cada corrida

@@ -1,0 +1,28 @@
+{
+  "name": "demo-e3-nest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plantilla para el experimento E3 (M8, S08): un módulo de precios en NestJS con sus dos formas (en proceso y extraído por HTTP), Toxiproxy entre la API y el módulo, y k6 con dos rutas y fases.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "frontera": "node scripts/chequear-frontera.mjs",
+    "build": "node scripts/chequear-frontera.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/main.js",
+    "start:precios": "node dist/main-precios.js"
+  },
+  "dependencies": {
+    "@nestjs/common": "12.3.2",
+    "@nestjs/core": "12.3.2",
+    "@nestjs/platform-express": "12.3.2",
+    "opossum": "10.0.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3"
+  }
+}
