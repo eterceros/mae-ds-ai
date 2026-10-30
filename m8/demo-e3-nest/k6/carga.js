@@ -4,7 +4,7 @@
 // Cada petición lleva su fase (etiqueta fase), según el reloj:
 //   calentamiento  [0, CALENTAMIENTO)                  se descarta: Node todavía está optimizando
 //   antes          hasta INICIO_FALLA                  precios sano
-//   falla          de INICIO_FALLA a FIN_FALLA         precios roto por Toxiproxy (si FALLA=colgado|caido)
+//   falla          de INICIO_FALLA a FIN_FALLA         precios roto por Toxiproxy (si FALLA=colgado|caido|lento)
 //   despues        de FIN_FALLA a DURACION             precios arreglado: ¿se recupera solo?
 // INICIO_FALLA, FIN_FALLA y DURACION se cuentan desde el fin del calentamiento.
 //
@@ -20,7 +20,8 @@ const CALENTAMIENTO = Number(__ENV.CALENTAMIENTO || 10); // s
 const INICIO_FALLA = Number(__ENV.INICIO_FALLA || 10); // s después del calentamiento
 const FIN_FALLA = Number(__ENV.FIN_FALLA || 20);
 const DURACION = Number(__ENV.DURACION || 30);
-const FALLA = __ENV.FALLA || ''; // '', 'colgado' o 'caido'
+const FALLA = __ENV.FALLA || ''; // '', 'colgado', 'caido' o 'lento'
+if (!['', 'colgado', 'caido', 'lento'].includes(FALLA)) throw new Error(`FALLA desconocida: '${FALLA}' (use colgado, caido o lento)`);
 const TOTAL = CALENTAMIENTO + DURACION;
 
 // DATOS: k6 no inventa datos; pide ids que EXISTEN. Aquí, del rango 1..N_PRODUCTOS que genera
@@ -81,6 +82,16 @@ export function catalogo(datos) {
   http.get(`${API}/catalogo`, { tags: { ruta: 'catalogo', fase: fase(datos) }, timeout: '10s' });
 }
 
+// Las fallas que son un toxic de Toxiproxy (se agregan en INICIO_FALLA y se borran en FIN_FALLA):
+const TOXICS = {
+  // timeout=0 en el sentido API->precios: Toxiproxy acepta la conexión, pero la petición nunca
+  // llega a precios y la conexión no se cierra: precios "colgado".
+  colgado: { type: 'timeout', stream: 'upstream', attributes: { timeout: 0 } },
+  // latency en el sentido precios->API: la respuesta llega 2 s tarde. Con el plazo por intento
+  // de PreciosHttp (300 ms por omisión), la API corta antes y responde 503 por plazo vencido.
+  lento: { type: 'latency', stream: 'downstream', attributes: { latency: 2000 } },
+};
+
 // Rompe precios a través de la API de Toxiproxy y anota cuántas llamadas recibió en cada fase.
 export function control(datos) {
   let previo = datos.llamadas;
@@ -96,16 +107,17 @@ export function control(datos) {
   anotar('calentamiento');
   sleep(INICIO_FALLA);
   anotar('antes');
-  if (romper && FALLA === 'colgado') {
-    // timeout=0 en el sentido API->precios: Toxiproxy acepta la conexión, pero la petición nunca
-    // llega a precios y la conexión no se cierra: precios "colgado".
-    http.post(`${TOXIPROXY}/proxies/${PROXY}/toxics`, JSON.stringify({ name: 'colgado', type: 'timeout', stream: 'upstream', attributes: { timeout: 0 } }), json);
+  // colgado y lento se provocan con un toxic que se agrega ahora y se borra al final de la falla;
+  // caido, apagando el proxy. Los toxics se aplican a todas las conexiones (toxicity 1).
+  const toxic = TOXICS[FALLA];
+  if (romper && toxic) {
+    http.post(`${TOXIPROXY}/proxies/${PROXY}/toxics`, JSON.stringify({ name: FALLA, toxicity: 1, ...toxic }), json);
   } else if (romper) {
     // enabled=false: Toxiproxy cierra el puerto; conectar falla al instante (ECONNREFUSED).
     http.post(`${TOXIPROXY}/proxies/${PROXY}`, JSON.stringify({ enabled: false }), json);
   }
   sleep(FIN_FALLA - INICIO_FALLA);
-  if (romper && FALLA === 'colgado') http.del(`${TOXIPROXY}/proxies/${PROXY}/toxics/colgado`, null, json);
+  if (romper && toxic) http.del(`${TOXIPROXY}/proxies/${PROXY}/toxics/${FALLA}`, null, json);
   else if (romper) http.post(`${TOXIPROXY}/proxies/${PROXY}`, JSON.stringify({ enabled: true }), json);
   anotar('falla');
   sleep(DURACION - FIN_FALLA);

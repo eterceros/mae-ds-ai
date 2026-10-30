@@ -130,6 +130,7 @@ PowerShell:
 ```powershell
 docker compose --env-file formas/http.env run --rm k6 run -e FALLA=colgado /k6/carga.js
 docker compose --env-file formas/http.env run --rm k6 run -e FALLA=caido /k6/carga.js
+docker compose --env-file formas/http.env run --rm k6 run -e FALLA=lento /k6/carga.js
 docker compose --env-file formas/proceso.env run --rm k6 run -e FALLA=colgado /k6/carga.js
 ```
 
@@ -139,20 +140,24 @@ Git Bash:
 export MSYS_NO_PATHCONV=1
 docker compose --env-file formas/http.env run --rm k6 run -e FALLA=colgado /k6/carga.js
 docker compose --env-file formas/http.env run --rm k6 run -e FALLA=caido /k6/carga.js
+docker compose --env-file formas/http.env run --rm k6 run -e FALLA=lento /k6/carga.js
 docker compose --env-file formas/proceso.env run --rm k6 run -e FALLA=colgado /k6/carga.js
 ```
 
-Una corrida dura 40 s: 10 s de calentamiento (no se cuentan) y 30 s medidos, con la falla de los 10 a los 20 s. Variables (`-e NOMBRE=valor`): `FALLA` (`colgado`, `caido` o vacía), `RPS` (peticiones por segundo **en cada ruta**, 50), `CALENTAMIENTO` (10), `INICIO_FALLA` (10), `FIN_FALLA` (20), `DURACION` (30), `N_PRODUCTOS` (1000), `IDS` (archivo JSON de ids), `SALIDA` (nombre del resumen).
+Una corrida dura 40 s: 10 s de calentamiento (no se cuentan) y 30 s medidos, con la falla de los 10 a los 20 s. Variables (`-e NOMBRE=valor`): `FALLA` (`colgado`, `caido`, `lento` o vacía; otro valor detiene k6 con un error), `RPS` (peticiones por segundo **en cada ruta**, 50), `CALENTAMIENTO` (10), `INICIO_FALLA` (10), `FIN_FALLA` (20), `DURACION` (30), `N_PRODUCTOS` (1000), `IDS` (archivo JSON de ids), `SALIDA` (nombre del resumen).
+
+Las tres se aplican a todas las conexiones, en el segundo `INICIO_FALLA`, y se quitan en `FIN_FALLA`:
 
 - **colgado**: un *toxic* `timeout` con `timeout: 0` en el sentido API→precios. Toxiproxy acepta la conexión, la petición nunca llega a precios y la conexión no se cierra.
 - **caido**: `enabled: false` en el proxy. Toxiproxy cierra el puerto y conectar falla al instante (`ECONNREFUSED`).
+- **lento**: un *toxic* `latency` de 2000 ms en el sentido precios→API (`downstream`), en todas las conexiones. Precios contesta, pero la respuesta llega 2 s tarde: con el plazo por intento de 300 ms, la API corta antes y `/pedidos/:id` responde 503 por plazo vencido. Es lo más parecido a un incidente real (amenaza 5): lentitud, no un corte limpio.
 - En la forma `proceso` no hay red que romper: el script lo dice y mide las mismas fases igual.
 
 Al terminar, k6 muestra una tabla por ruta y fase (peticiones, p50, p95, máximo, % de errores) y las llamadas de la API a precios en cada fase, y guarda el resumen completo en `resultados/<forma>-<falla>-<fecha>.json` (o `resultados/<SALIDA>.json`). Dentro del JSON, las cifras de cada combinación están en `metrics["http_req_duration{ruta:pedidos,fase:falla}"]`, `metrics["http_req_failed{ruta:catalogo,fase:falla}"]`, `metrics["llamadas_a_precios{fase:falla}"]`, etc. k6 solo guarda una submétrica si tiene un umbral; `k6/comun.js` les pone umbrales que nunca fallan. Si quieren que k6 marque la corrida como fallida cuando su hipótesis no se cumple, agreguen uno de verdad, p. ej. `'http_req_duration{ruta:catalogo,fase:falla}': ['p(95)<50']`.
 
 ### Cinco corridas por forma
 
-Con `down -v` entre corridas, para que ninguna herede el estado de la anterior (ni el del breaker, ni datos). Cambien `http`/`colgado` por cada combinación.
+Con `down -v` entre corridas, para que ninguna herede el estado de la anterior (ni el del breaker, ni datos). Cambien `http`/`colgado` por cada combinación (forma `proceso` o `http`; falla `colgado`, `caido` o `lento`).
 
 PowerShell:
 
@@ -235,7 +240,6 @@ Para ver fallar el chequeo, agreguen `import { PreciosService } from '../precios
 - **Base de datos, migraciones ni seed**: el dominio está en memoria (ver [Datos para la carga](#datos-para-la-carga)).
 - **Bulkhead**: si su API comparte un pool entre la ruta que usa el módulo y otras, vean `demo-resiliencia/src/despues/bulkhead.ts` (R6).
 - **Tiempo de recuperación medido directamente.** El resumen da los errores de la fase `despues`; para saber en qué segundo volvió a 0 %, achiquen las fases o guarden cada petición con `--out json=/out/detalle.json` y búsquenlo ahí.
-- **Una falla «lento»** (`latency`): se agrega igual que las otras, con un *toxic* en `control()` de `k6/carga.js`.
 - **Contrato OpenAPI, autenticación entre servicios, trazas**: se ven en otras sesiones.
 
 ## Versiones (verificadas el 30 de octubre de 2026)
