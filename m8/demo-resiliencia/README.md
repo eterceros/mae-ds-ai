@@ -150,7 +150,7 @@ E3 (actividad 6) lo hace cada grupo sobre **su** proyecto: compara un módulo de
 | Las protecciones de la forma extraída | [`src/despues/cliente-b.ts`](src/despues/cliente-b.ts) (plazo y reintentos), [`breaker.ts`](src/despues/breaker.ts) y [`bulkhead.ts`](src/despues/bulkhead.ts) | En NestJS van dentro de la clase que llama al módulo por HTTP |
 | Cómo reportar | [`results/ESCENARIOS.md`](results/ESCENARIOS.md): mediana por fase | E3 pide 5 corridas o más por forma, con mediana **y** rango |
 
-Las hipótesis, el informe y el ADR no están en esta demo: el formato se ve en las diapositivas 43 y 46 de la S08.
+Las plantillas vacías de hipótesis, informe y ADR están en [`../demo-e3-nest/`](../demo-e3-nest/), junto con el módulo NestJS en sus dos formas; el formato se explica en las diapositivas 43 y 46 de la S08.
 
 ## Problemas encontrados al armar la demo
 
