@@ -1,4 +1,4 @@
-// W3C Trace Context mínimo, sin OpenTelemetry (eso es la S10).
+// W3C Trace Context mínimo, sin OpenTelemetry (eso es la S11).
 // traceparent = "00-<trace-id 32 hex>-<span-id 16 hex>-<flags 2 hex>"
 import { randomBytes } from 'node:crypto';
 
