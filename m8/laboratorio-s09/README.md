@@ -7,6 +7,7 @@ Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9 (lunes 9 de novie
 - **Qué se hace:** parten de una **versión ingenua** de un importador (dada, en Node y en Python), escriben **su versión mejorada** y miden las dos con las mismas medidas.
 - **Sin entrega.** Repetirlo es opcional y no tiene fecha. Si lo repiten, la plantilla de informe del final de esta página les sirve para anotar lo que midan.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA, ni para escribir el importador ni para leer los resultados. La idea es que cada uno vea dónde se rompe una carga de datos y por qué.
+- **Solución del docente:** [`solucion/`](solucion/README.md) (para después de intentarlo).
 
 ## Antes de empezar
 
