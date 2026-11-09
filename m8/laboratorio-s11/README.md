@@ -5,7 +5,7 @@ Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 11 (miércoles 4 de
 - **En clase:** 35 minutos, después del bloque de Kubernetes desde el desarrollador. Lo que no terminen en clase lo completan en casa.
 - **Quién:** cada grupo, con **un solo servicio sin estado** de su `compose.yaml` (la API, o un servicio que no guarde datos propios). La base de datos y el broker se quedan fuera.
 - **Qué se hace:** escriben a mano los manifiestos de ese servicio a partir de las plantillas de [`plantillas/`](plantillas/), lo levantan en un clúster local de **kind**, le hacen una petición y rompen una *probe* a propósito para ver qué pasa.
-- **Inicia la actividad 8** (manifiestos de Kubernetes): carpeta `k8s/` en el repositorio del grupo, **fecha sugerida: miércoles 11 de noviembre, 23:59**; se reciben hasta el **viernes 13 de noviembre, 23:59**. Ver «[Seguir en casa](#seguir-en-casa-hacia-la-actividad-8)».
+- **Cambio del 9 nov:** este laboratorio no se hizo en clase y queda como **lectura posterior, sin entrega**; la actividad 8 (manifiestos de Kubernetes) se eliminó. Pueden hacerlo por su cuenta; «[Seguir en casa](#seguir-en-casa-hacia-la-actividad-8)» queda como práctica opcional.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA, ni para escribir los manifiestos ni para leer los errores. La idea es que cada uno sepa qué hace cada línea antes de pedirle manifiestos a una IA (eso se revisa en el bloque de clase con `--dry-run=server` y un *linter*).
 
 ## Palabras que se usan aquí
@@ -240,7 +240,7 @@ Arréglenla, vuelvan a aplicar y comprueben otra vez el criterio de éxito: pod 
 
 ## Seguir en casa hacia la actividad 8
 
-La actividad 8 es la carpeta **`k8s/`** del repositorio del grupo con los manifiestos de su servicio. Fecha sugerida: **miércoles 11 de noviembre, 23:59**; se reciben hasta el **viernes 13 de noviembre, 23:59**.
+Práctica opcional, sin entrega (la actividad 8 se eliminó el 9 nov): la carpeta **`k8s/`** con los manifiestos de su servicio.
 
 **Qué se entrega:**
 

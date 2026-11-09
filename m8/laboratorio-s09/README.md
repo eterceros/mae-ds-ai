@@ -1,11 +1,11 @@
 # Laboratorio de la sesión 9: importar datos sin romperse (mini-ETL)
 
-Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9 (viernes 30 de octubre de 2026)
+Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9 (lunes 9 de noviembre de 2026)
 
-- **En clase:** 45 minutos, después del bloque de integración con sistemas externos. Lo que no terminen en clase lo completan en casa.
-- **Quién:** cada grupo. Elijan **una** opción: **A** (el CSV y el Postgres de esta carpeta) o **B** (datos de su propio producto).
+- **En clase: demostración del docente.** El docente hace este laboratorio en vivo (unos 25 minutos, después del bloque de integración con sistemas externos); ustedes miran y preguntan. No se califica.
+- **Opciones:** **A** (el CSV y el Postgres de esta carpeta; es la que muestra el docente) o **B** (datos de su propio producto), para quien quiera repetirlo después.
 - **Qué se hace:** parten de una **versión ingenua** de un importador (dada, en Node y en Python), escriben **su versión mejorada** y miden las dos con las mismas medidas.
-- **Entrega:** el archivo `docs/laboratorios/importacion.md` en el repositorio del grupo, con el código de su versión mejorada en el mismo repositorio, **fecha sugerida: miércoles 11 de noviembre, 23:59**; se reciben hasta el vie 13 nov, 23:59. La plantilla está al final de esta página.
+- **Sin entrega.** Repetirlo es opcional y no tiene fecha. Si lo repiten, la plantilla de informe del final de esta página les sirve para anotar lo que midan.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA, ni para escribir el importador ni para leer los resultados. La idea es que cada uno vea dónde se rompe una carga de datos y por qué.
 
 ## Antes de empezar
@@ -136,7 +136,7 @@ node import-naive.ts ../data/enrollments-clean.csv    # 3. el mismo archivo otra
 node import-naive.ts ../data/enrollments-500k.csv     # 4. el grande (memoria)
 ```
 
-Anoten la salida de cada una: la van a poner en el entregable.
+Anoten la salida de cada una: sirve para comparar con la versión mejorada.
 
 Si su Postgres no está en `127.0.0.1:18450` (por ejemplo, en la opción B), definan la variable `DATABASE_URL` antes de ejecutar: `$env:DATABASE_URL = "postgres://usuario:clave@host:puerto/base"` en PowerShell, `export DATABASE_URL=...` en macOS o Linux.
 
@@ -165,13 +165,13 @@ Banco de pruebas: Intel Core i9-12900H, 64 GB de RAM, Windows 11, Docker Desktop
 
 Escríbanla en un archivo nuevo (por ejemplo `import-better.ts` o `import_better.py`) en el repositorio del grupo, en el mismo lenguaje que la ingenua que eligieron. No modifiquen la ingenua: la necesitan para comparar. Pueden agregar tablas (intermedia, de rechazados, de corridas) en su propio archivo SQL.
 
-Lo que tiene que lograr (cómo lo logran lo deciden ustedes y lo explican en el entregable):
+Lo que tiene que lograr (cómo lo logran lo deciden ustedes y lo explican en el informe, si lo escriben):
 
 1. **Leer por partes**, sin cargar el archivo entero en memoria (*streaming*): la memoria máxima con 500 000 filas tiene que quedar parecida a la de 50 000.
 2. **Leer CSV de verdad**: comillas, número de columnas, encabezado esperado. En Python, el módulo `csv` de la biblioteca estándar; en Node, un lector de CSV (por ejemplo `csv-parse`) o uno propio sobre `readline`, justificando por qué alcanza.
 3. **Validar cada fila** antes de tocar la base: fecha en formato `AAAA-MM-DD` y existente, correo con forma válida, monto numérico y no negativo, campos obligatorios no vacíos, código de curso con el formato de la tabla.
 4. **No detenerse por una fila mala**: las filas inválidas van a un **archivo de rechazados** con el número de línea, el valor original y el **motivo**; las buenas se cargan.
-5. **Decidir qué hacer con las repetidas** (dentro del archivo y respecto de lo que ya está en la base) y aplicarlo de forma consistente: por ejemplo, «gana la última aparición del archivo». Escriban la regla en el entregable.
+5. **Decidir qué hacer con las repetidas** (dentro del archivo y respecto de lo que ya está en la base) y aplicarlo de forma consistente: por ejemplo, «gana la última aparición del archivo». Escriban la regla.
 6. **Cargar por lotes** (por ejemplo, de 1000 filas), no fila por fila: `INSERT` de varias filas a la vez, o `COPY` a una tabla intermedia y de ahí a la final.
 7. **Upsert idempotente** contra la clave única `external_id`: **ejecutar dos veces el mismo archivo no cambia nada** la segunda vez (ni filas nuevas, ni `updated_at` tocado en filas que no cambiaron).
 8. **Transacciones del tamaño adecuado**: decidan si una transacción por lote o una sola al final (con tabla intermedia) y expliquen qué pasa si el proceso se cae a la mitad y lo vuelven a lanzar.
@@ -238,7 +238,7 @@ docker compose down -v
 
 ---
 
-## Plantilla del entregable: `docs/laboratorios/importacion.md`
+## Plantilla de informe (opcional): `docs/laboratorios/importacion.md`
 
 Copien esto en su repositorio y complétenlo.
 
