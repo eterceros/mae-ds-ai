@@ -1,4 +1,4 @@
-# Solución del docente: laboratorio S11 «Su servicio en kind»
+# Solución del docente: laboratorio S09 «Su servicio en kind»
 
 Manifiestos completos, sin `TODO`, para el servicio de [`../ejemplo/`](../ejemplo/) (API mínima en Node 24: `GET /`, `GET /salud`, puerto 3000). Es una referencia para comparar **después** de hacer el laboratorio a mano. Cada `TODO` de [`../plantillas/`](../plantillas/) aparece resuelto con un comentario `RESUELTO (TODO ...)` que explica el porqué.
 

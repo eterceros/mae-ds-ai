@@ -1,6 +1,6 @@
 # OpenTelemetry aplicado: de la cifra a la traza (demo del docente)
 
-Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 11
+Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9
 
 > **Es una demostración del docente.** No hay nada que entregar ni que ejecutar. Se publica para que puedan repasarla después de la clase y reproducirla si quieren. No necesita claves ni cuentas de ningún servicio: el visor de trazas es local (`grafana/otel-lgtm`).
 

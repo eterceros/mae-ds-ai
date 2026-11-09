@@ -8,4 +8,4 @@ Mismo realm que la demo: emisor `http://127.0.0.1:18600/realms/demo`, audiencia 
 - [`SecurityConfig.java`](src/main/java/demo/SecurityConfig.java): cadena de filtros como resource server + un validador que añade la comprobación de `aud=orders-api` (lo que falta por defecto).
 - [`OrdersController.java`](src/main/java/demo/OrdersController.java): la corrección de BOLA: el pedido tiene que ser del `sub` del token (`jwt.getSubject()`, el id estable del usuario, no `preferred_username`); si no, 404.
 
-Versiones mencionadas en clase: Spring Boot 4 con el starter `spring-boot-starter-oauth2-resource-server` (Spring Security 7). La alternativa con el agente de OpenTelemetry (`JAVA_TOOL_OPTIONS`) se ve en la S11, no aquí.
+Versiones mencionadas en clase: Spring Boot 4 con el starter `spring-boot-starter-oauth2-resource-server` (Spring Security 7). La alternativa con el agente de OpenTelemetry (`JAVA_TOOL_OPTIONS`) se ve en la S09, no aquí.

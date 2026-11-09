@@ -1,11 +1,11 @@
-# Laboratorio de la sesión 11: su servicio en kind
+# Laboratorio de la sesión 9: su servicio en kind
 
-Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 11 (miércoles 4 de noviembre de 2026)
+Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9 (lunes 9 de noviembre de 2026)
 
 - **En clase:** 35 minutos, después del bloque de Kubernetes desde el desarrollador. Lo que no terminen en clase lo completan en casa.
 - **Quién:** cada grupo, con **un solo servicio sin estado** de su `compose.yaml` (la API, o un servicio que no guarde datos propios). La base de datos y el broker se quedan fuera.
 - **Qué se hace:** escriben a mano los manifiestos de ese servicio a partir de las plantillas de [`plantillas/`](plantillas/), lo levantan en un clúster local de **kind**, le hacen una petición y rompen una *probe* a propósito para ver qué pasa.
-- **Cambio del 9 nov:** este laboratorio no se hizo en clase y queda como **lectura posterior, sin entrega**; la actividad 8 (manifiestos de Kubernetes) se eliminó. Pueden hacerlo por su cuenta; «[Seguir en casa](#seguir-en-casa-práctica-opcional)» queda como práctica opcional.
+- Este laboratorio es **lectura posterior, sin entrega**. Pueden hacerlo por su cuenta; «[Seguir en casa](#seguir-en-casa-práctica-opcional)» queda como práctica opcional.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA, ni para escribir los manifiestos ni para leer los errores. La idea es que cada uno sepa qué hace cada línea antes de pedirle manifiestos a una IA (eso se revisa en el bloque de clase con `--dry-run=server` y un *linter*).
 
 ## Palabras que se usan aquí
@@ -240,7 +240,7 @@ Arréglenla, vuelvan a aplicar y comprueben otra vez el criterio de éxito: pod 
 
 ## Seguir en casa (práctica opcional)
 
-Práctica opcional, sin entrega (la actividad 8 se eliminó el 9 nov): la carpeta **`k8s/`** con los manifiestos de su servicio.
+Práctica opcional, sin entrega: la carpeta **`k8s/`** con los manifiestos de su servicio.
 
 **Qué conviene tener al terminar** (sirve para revisarse ustedes mismos; no se entrega):
 

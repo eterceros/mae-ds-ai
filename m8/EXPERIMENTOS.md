@@ -272,7 +272,7 @@ De [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md) (24 de octubre de 2026):
 
 ### Para qué les sirve
 
-- **Actividad 5 (`compose.yaml`):** `despues/compose.yaml` es el modelo de healthcheck, `depends_on` con condición y migraciones como servicio.
+- **Actividad 4 (`compose.yaml`):** `despues/compose.yaml` es el modelo de healthcheck, `depends_on` con condición y migraciones como servicio.
 - **Laboratorio de la S08:** [`laboratorio-s08/`](laboratorio-s08/) (auditar/adelgazar la imagen o Podman; entregable `docs/laboratorios/imagen-o-podman.md`, fecha sugerida: domingo 1 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59). La demo es material de apoyo para comparar, no para copiar.
 
 ### Advertencias
@@ -380,11 +380,11 @@ De [`ESCENARIOS.md`](demo-mensajeria/results/ESCENARIOS.md) (24 de octubre de 20
 
 ---
 
-## 7. Kubernetes desde el desarrollador (sesión 11)
+## 7. Kubernetes desde el desarrollador (sesión 9)
 
 Carpeta: [`demo-k8s/`](demo-k8s/) · laboratorio relacionado: [`laboratorio-s11/`](laboratorio-s11/)
 
-**Lectura posterior: la actividad 8 (manifiestos de Kubernetes) se eliminó el 9 nov; la carpeta `k8s/` queda como práctica opcional, sin entrega.**
+**Lectura posterior, sin entrega: la carpeta `k8s/` queda como práctica opcional, sin entrega.**
 
 ### Qué pregunta responde
 
@@ -424,7 +424,7 @@ KC, además: `base64 -d` devuelve el valor original sin ninguna clave (base64 no
 
 ---
 
-## 8. OpenTelemetry aplicado (sesión 11)
+## 8. OpenTelemetry aplicado (sesión 9)
 
 Carpeta: [`demo-otel/`](demo-otel/)
 
@@ -469,7 +469,7 @@ Además, la API de `despues` sin el gancho ESM (`--experimental-loader`) pierde 
 
 Carpeta: [`demo-seguridad/`](demo-seguridad/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-seguridad/DIFERENCIAS.md)
 
-**Lectura posterior: la actividad 9 (seguridad de la API) se eliminó el 9 nov; aplicar estos controles en su proyecto es opcional, sin entrega.**
+**Lectura posterior, sin entrega: aplicar estos controles en su proyecto es opcional, sin entrega.**
 
 ### Qué pregunta responde
 

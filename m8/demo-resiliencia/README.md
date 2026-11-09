@@ -139,7 +139,7 @@ Medidos el 24 de octubre de 2026 en un portátil (Intel Core i9-12900H, 20 hilos
 
 ## Para el experimento E3: qué copiar a su proyecto
 
-E3 (actividad 6) lo hace cada grupo sobre **su** proyecto: compara un módulo dentro del monolito modular con el mismo módulo extraído a un servicio, mientras se hace fallar ese servicio a propósito. **Esta demo no es un E3 completo:** muestra solo la forma extraída (A y B ya son dos servicios), está escrita sobre `node:http` y no sobre NestJS, y no tiene la variante «en proceso». Sirve para copiar las piezas que no dependen del *framework*:
+E3 (actividad 5) lo hace cada grupo sobre **su** proyecto: compara un módulo dentro del monolito modular con el mismo módulo extraído a un servicio, mientras se hace fallar ese servicio a propósito. **Esta demo no es un E3 completo:** muestra solo la forma extraída (A y B ya son dos servicios), está escrita sobre `node:http` y no sobre NestJS, y no tiene la variante «en proceso». Sirve para copiar las piezas que no dependen del *framework*:
 
 | Paso de E3 | Qué copiar de esta demo | Qué ajustar en su proyecto |
 |---|---|---|

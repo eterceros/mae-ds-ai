@@ -1,8 +1,8 @@
 # Kubernetes desde el desarrollador (demo del docente)
 
-Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 11
+Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 9
 
-> **Es una demostración del docente.** No hay nada que entregar. Se publica para repasarla después de la clase y reproducirla si quieren. Todo corre en un clúster local de [kind](https://kind.sigs.k8s.io/) (Kubernetes dentro de un contenedor de Docker): no necesita cuentas ni nube. La **actividad 8** (los manifiestos de su servicio) sigue la misma forma que [`despues/`](despues/).
+> **Es una demostración del docente.** No hay nada que entregar. Se publica para repasarla después de la clase y reproducirla si quieren. Todo corre en un clúster local de [kind](https://kind.sigs.k8s.io/) (Kubernetes dentro de un contenedor de Docker): no necesita cuentas ni nube. Si escriben los manifiestos de su servicio (práctica opcional, sin entrega), sigan la misma forma que [`despues/`](despues/).
 
 ## Qué es
 
@@ -38,7 +38,7 @@ Todos los puertos son altos y escuchan solo en `127.0.0.1`.
 | Carpeta | Qué hay |
 |---|---|
 | [`antes/`](antes/) | `ka-1-generado-por-ia.yaml`: lo que devolvió un asistente sin revisar; `ka-2-pasa-los-validadores.yaml`: lo mismo tras corregir todo lo que dijeron el servidor y kube-linter, y que aún no funciona; `kb-liveness-con-dependencia.yaml`: la liveness consulta a `precios`; `kc-secreto-en-variable.yaml`: el Secret como variable de entorno. Cada defecto está comentado (`# SIGUE MAL`, `# MAL`) |
-| [`despues/`](despues/) | los manifiestos revisados, con cada corrección marcada `# CORRECCIÓN: …` y su porqué: lo que aplica el README y el modelo de la actividad 8 |
+| [`despues/`](despues/) | los manifiestos revisados, con cada corrección marcada `# CORRECCIÓN: …` y su porqué: lo que aplica el README y el modelo para los manifiestos de su servicio |
 | [`app/`](app/) | el código de los dos servicios (el mismo para `antes/` y `despues/`: solo cambian los manifiestos) |
 
 [`DIFERENCIAS.md`](DIFERENCIAS.md) es la tabla problema → línea en `antes/` → cambio en `despues/` → cifra medida.
