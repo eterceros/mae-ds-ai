@@ -296,7 +296,7 @@ De [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md) (24 de octubre de 2026):
 
 Carpeta: [`demo-resiliencia/`](demo-resiliencia/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-resiliencia/DIFERENCIAS.md)
 
-**Referencia para el experimento E3 (resiliencia); fecha sugerida de entrega: lunes 9 de noviembre; se reciben hasta el vie 13 nov, 23:59.**
+**Referencia para el experimento E3 (resiliencia); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
 
 ### Qué pregunta responde
 
@@ -336,7 +336,7 @@ Medianas de 3 corridas, de [`ESCENARIOS.md`](demo-resiliencia/results/ESCENARIOS
 
 Carpeta: [`demo-mensajeria/`](demo-mensajeria/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-mensajeria/DIFERENCIAS.md)
 
-**Referencia para el experimento E4 (mensajería, incluye un LLM local con Docker Model Runner); fecha sugerida de entrega: lunes 9 de noviembre; se reciben hasta el vie 13 nov, 23:59.**
+**Referencia para el experimento E4 (mensajería, incluye un LLM local con Docker Model Runner); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
 
 ### Qué pregunta responde
 
@@ -384,7 +384,7 @@ De [`ESCENARIOS.md`](demo-mensajeria/results/ESCENARIOS.md) (24 de octubre de 20
 
 Carpeta: [`demo-k8s/`](demo-k8s/) · laboratorio relacionado: [`laboratorio-s11/`](laboratorio-s11/)
 
-**Modelo para la actividad 8 (manifiestos de Kubernetes, carpeta `k8s/`; se inicia en el laboratorio de la S11); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
+**Lectura posterior: la actividad 8 (manifiestos de Kubernetes) se eliminó el 9 nov; la carpeta `k8s/` queda como práctica opcional, sin entrega.**
 
 ### Qué pregunta responde
 
@@ -469,7 +469,7 @@ Además, la API de `despues` sin el gancho ESM (`--experimental-loader`) pierde 
 
 Carpeta: [`demo-seguridad/`](demo-seguridad/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-seguridad/DIFERENCIAS.md)
 
-**Modelo para la actividad 9 (seguridad de la API de su proyecto); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
+**Lectura posterior: la actividad 9 (seguridad de la API) se eliminó el 9 nov; aplicar estos controles en su proyecto es opcional, sin entrega.**
 
 ### Qué pregunta responde
 
