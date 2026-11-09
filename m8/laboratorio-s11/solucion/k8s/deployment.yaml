@@ -1,0 +1,147 @@
+# Solución del docente · Deployment del servicio de ejemplo (ejemplo/server.mjs,
+# imagen construida con `docker build -t ejemplo-api:lab ejemplo` y cargada con
+# `kind load docker-image ejemplo-api:lab --name lab-s11`).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # RESUELTO (TODO nombre): el nombre del servicio, en minúsculas y guiones.
+  name: ejemplo-api
+  labels:
+    app: ejemplo-api
+spec:
+  # Una réplica: es lo que pide el laboratorio. Con 1 réplica kube-linter no
+  # exige anti-afinidad (no-anti-affinity solo avisa desde 2); con 2 o más en
+  # kind (un solo nodo) habría que justificarla, como en demo-k8s/despues/api.yaml.
+  replicas: 1
+  selector:
+    matchLabels:
+      # RESUELTO (TODO selector): la misma etiqueta que la plantilla del pod.
+      # Si no coinciden, la API rechaza el Deployment («selector does not
+      # match template labels»).
+      app: ejemplo-api
+  template:
+    metadata:
+      labels:
+        app: ejemplo-api
+    spec:
+      containers:
+        - name: ejemplo-api
+          # RESUELTO (TODO imagen): la imagen cargada en el nodo, con etiqueta
+          # FIJA. Con :latest y SIN imagePullPolicy, Kubernetes pone Always y
+          # va a Docker Hub (ImagePullBackOff). Aquí IfNotPresent lo evitaría,
+          # pero la etiqueta fija es reproducible y kube-linter (latest-tag) la
+          # exige.
+          image: ejemplo-api:lab
+          # IfNotPresent: usar la imagen que ya está en el nodo de kind.
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              # RESUELTO (TODO puerto): server.mjs escucha en PORT (3000, del
+              # ConfigMap) en todas las interfaces, no solo en 127.0.0.1, así
+              # que el kubelet y el Service llegan a él.
+              containerPort: 3000
+          # Configuración no secreta: cada clave del ConfigMap (PORT, MENSAJE)
+          # se vuelve una variable de entorno.
+          envFrom:
+            - configMapRef:
+                # RESUELTO (TODO ConfigMap): el nombre de configmap.yaml.
+                name: ejemplo-api-config
+          # RESUELTO (TODO Secret), OPCIÓN B: el Secret montado como archivo.
+          # server.mjs lee la ruta del archivo de API_KEY_FILE. Es la opción de
+          # la demo (demo-k8s/despues/api.yaml): el valor no aparece en
+          # `kubectl describe pod` ni en el entorno del proceso.
+          env:
+            - name: API_KEY_FILE
+              value: /etc/secretos/API_KEY
+          # La opción A (variable de entorno) también funciona con server.mjs;
+          # sería, en lugar del env y del volumeMounts de aquí:
+          # env:
+          #   - name: API_KEY
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: ejemplo-api-secret
+          #         key: API_KEY
+          volumeMounts:
+            - name: secretos
+              mountPath: /etc/secretos
+              readOnly: true
+
+          # RESUELTO (TODO startup): server.mjs arranca en menos de 1 s, así que
+          # no es imprescindible; se deja para mostrar dónde va. Hasta que pasa,
+          # la liveness y la readiness no corren. Margen: 10 × 1 s = 10 s.
+          # En Spring, failureThreshold × periodSeconds ≥ el peor arranque
+          # observado (p. ej. 30 × 2 s = 60 s).
+          startupProbe:
+            httpGet:
+              path: /salud
+              port: http
+            periodSeconds: 1
+            failureThreshold: 10
+          # RESUELTO (TODO readiness): «¿este pod puede recibir tráfico ahora?».
+          # Si falla, el pod sale del Service (no se reinicia). /salud es la
+          # ruta de salud real de server.mjs (devuelve 200 mientras el proceso
+          # responde). Si el servicio tuviera una dependencia (base, broker),
+          # es AQUÍ donde se comprobaría, con un timeout corto.
+          readinessProbe:
+            httpGet:
+              path: /salud
+              port: http          # por nombre: el mismo puerto que containerPort
+            periodSeconds: 5
+            failureThreshold: 3
+          # RESUELTO (TODO liveness): «¿el proceso se colgó y hay que
+          # reiniciarlo?». Solo comprueba que el proceso responde: /salud no
+          # consulta nada fuera del proceso. Más tolerante que la readiness
+          # (10 s × 3 fallas = ≈ 30 s antes de reiniciar), porque reiniciar es
+          # más drástico que sacar el pod del Service.
+          livenessProbe:
+            httpGet:
+              path: /salud
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 1     # el valor por omisión, escrito para que se vea
+
+          # RESUELTO (TODO requests/limits): declarados, sin afinar.
+          # - requests.cpu 50m (una vigésima de núcleo) y requests.memory 64Mi:
+          #   un servidor Node sin dependencias en reposo usa unas decenas de
+          #   MiB; es lo que el clúster RESERVA para decidir dónde cabe el pod.
+          # - limits.memory 128Mi: el doble del request, margen para picos. Si
+          #   el proceso lo pasa, muere con OOMKilled (exit 137): en ese caso se
+          #   sube y se anota.
+          # - Sin limits.cpu, como la demo: con límite, el proceso se frena al
+          #   llegar a él; aquí no aporta nada.
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          # securityContext, como en la demo (demo-k8s/despues/api.yaml):
+          # - runAsNonRoot: el kubelet se niega a arrancar el contenedor como root.
+          # - runAsUser 1000: el Dockerfile de ejemplo/ dice `USER node` (un
+          #   NOMBRE). Con runAsNonRoot y un usuario no numérico el kubelet no
+          #   puede comprobar que no es root y falla con CreateContainerConfigError
+          #   («image has non-numeric user (node), cannot verify user is
+          #   non-root»). El uid 1000 es el del usuario node de la imagen.
+          # - allowPrivilegeEscalation false: ningún proceso hijo gana privilegios.
+          # - readOnlyRootFilesystem: server.mjs no escribe en disco.
+          # - capabilities drop ALL y seccompProfile RuntimeDefault: el nivel
+          #   «restricted» de Pod Security. El proceso no necesita ninguna
+          #   capability (escucha en 3000, no en un puerto < 1024).
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+      # RESUELTO (TODO opción B del Secret): el volumen con el Secret. Cada
+      # clave (API_KEY) es un archivo. No se pone defaultMode: 0400: los
+      # archivos son de root y el uid 1000 no podría leerlos (EACCES). El valor
+      # por omisión, 0644, sí lo permite.
+      volumes:
+        - name: secretos
+          secret:
+            secretName: ejemplo-api-secret

@@ -1,0 +1,21 @@
+# Solución del docente · ConfigMap del servicio de ejemplo (ejemplo/server.mjs).
+# Configuración NO secreta: lo que en un compose.yaml iría en `environment:` y
+# no es una contraseña ni una clave.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # RESUELTO (TODO nombre): <nombre-del-servicio>-config. Es el nombre que
+  # busca el Deployment en envFrom.configMapRef; si no coinciden, el pod queda
+  # en CreateContainerConfigError: configmap "..." not found.
+  name: ejemplo-api-config
+  labels:
+    app: ejemplo-api
+data:
+  # RESUELTO (TODO claves): una clave por cada variable que lee server.mjs.
+  # Los valores son siempre texto: el puerto va entre comillas.
+  # PORT: el puerto en el que escucha el proceso. Debe ser el mismo número que
+  # containerPort en deployment.yaml (3000, el que usa server.mjs por omisión).
+  PORT: "3000"
+  # MENSAJE: el texto que devuelve GET /. Sirve para comprobar que el
+  # ConfigMap llegó al contenedor.
+  MENSAJE: "Hola desde kind (ConfigMap ejemplo-api-config)"

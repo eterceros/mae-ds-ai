@@ -20,8 +20,10 @@ spec:
       containers:
         - name: TODO_NOMBRE_SERVICIO
           # TODO: la imagen que construyeron y cargaron con `kind load docker-image`.
-          # Usen una etiqueta fija (por ejemplo :lab), no :latest. Con :latest
-          # Kubernetes intenta siempre bajarla de un registro y falla.
+          # Usen una etiqueta fija (por ejemplo :lab), no :latest. Con :latest y
+          # SIN imagePullPolicy, Kubernetes pone Always y va a Docker Hub
+          # (ImagePullBackOff). Aquí IfNotPresent lo evitaría, pero la etiqueta
+          # fija es reproducible y kube-linter (latest-tag) la exige.
           image: TODO_IMAGEN:TODO_ETIQUETA
           # IfNotPresent: usar la imagen que ya está cargada en el nodo de kind.
           imagePullPolicy: IfNotPresent

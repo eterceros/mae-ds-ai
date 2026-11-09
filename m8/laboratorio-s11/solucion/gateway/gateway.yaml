@@ -1,0 +1,16 @@
+# Solución del docente · Gateway "lab": es plantillas/gateway.yaml sin cambios
+# (no tenía TODO). Se copia aquí para que gateway/ se aplique entero:
+#   kubectl apply -f solucion/gateway/
+# Necesita antes el controlador y la GatewayClass "eg":
+#   node --no-warnings m8/demo-k8s/scripts/instalar-gateway.ts
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: lab
+spec:
+  # La clase "eg" la crea el script instalar-gateway del docente.
+  gatewayClassName: eg
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80

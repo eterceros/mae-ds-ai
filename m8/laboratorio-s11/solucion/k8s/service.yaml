@@ -1,0 +1,29 @@
+# Solución del docente · Service del servicio de ejemplo: un nombre y un
+# puerto estables delante de los pods del Deployment.
+apiVersion: v1
+kind: Service
+metadata:
+  # RESUELTO (TODO nombre): el nombre con el que otros pods lo llaman
+  # (http://ejemplo-api, o http://ejemplo-api.default.svc.cluster.local) y el
+  # que usa `kubectl port-forward service/ejemplo-api 18560:80`.
+  name: ejemplo-api
+  labels:
+    app: ejemplo-api
+spec:
+  # ClusterIP (el valor por omisión): solo se alcanza desde dentro del clúster.
+  # Desde la máquina se llega con `kubectl port-forward`.
+  type: ClusterIP
+  selector:
+    # RESUELTO (TODO selector): igual a spec.template.metadata.labels del
+    # Deployment. Si no coincide, el Service no tiene endpoints y el
+    # port-forward espera hasta «timed out waiting for the condition».
+    app: ejemplo-api
+  ports:
+    - name: http
+      # Puerto del Service (el que usan los clientes y el backendRefs.port de
+      # la HTTPRoute).
+      port: 80
+      # RESUELTO (TODO targetPort): por NOMBRE, el puerto "http" del
+      # contenedor (3000). Si mañana cambia el número en el Deployment, el
+      # Service no se rompe.
+      targetPort: http

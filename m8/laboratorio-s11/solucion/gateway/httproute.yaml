@@ -1,0 +1,24 @@
+# Solución del docente · HTTPRoute: qué ruta va a qué Service. Es la parte que
+# escribe el desarrollador.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  # RESUELTO (TODO nombre): el nombre del servicio al que enruta.
+  name: ejemplo-api
+spec:
+  parentRefs:
+    # RESUELTO (TODO Gateway): metadata.name de gateway.yaml, en el mismo
+    # namespace (default). Si no coincide, la ruta queda sin Accepted.
+    - name: lab
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        # RESUELTO (TODO Service): metadata.name de k8s/service.yaml.
+        - name: ejemplo-api
+          # RESUELTO (TODO puerto): el puerto del SERVICE (spec.ports[].port,
+          # 80), no el del contenedor (3000). Con 3000, ResolvedRefs queda en
+          # False: el Service no tiene ese puerto.
+          port: 80

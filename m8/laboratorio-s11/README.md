@@ -5,7 +5,7 @@ Módulo 8 · Desarrollo Backend y APIs Escalables · Sesión 11 (miércoles 4 de
 - **En clase:** 35 minutos, después del bloque de Kubernetes desde el desarrollador. Lo que no terminen en clase lo completan en casa.
 - **Quién:** cada grupo, con **un solo servicio sin estado** de su `compose.yaml` (la API, o un servicio que no guarde datos propios). La base de datos y el broker se quedan fuera.
 - **Qué se hace:** escriben a mano los manifiestos de ese servicio a partir de las plantillas de [`plantillas/`](plantillas/), lo levantan en un clúster local de **kind**, le hacen una petición y rompen una *probe* a propósito para ver qué pasa.
-- **Cambio del 9 nov:** este laboratorio no se hizo en clase y queda como **lectura posterior, sin entrega**; la actividad 8 (manifiestos de Kubernetes) se eliminó. Pueden hacerlo por su cuenta; «[Seguir en casa](#seguir-en-casa-hacia-la-actividad-8)» queda como práctica opcional.
+- **Cambio del 9 nov:** este laboratorio no se hizo en clase y queda como **lectura posterior, sin entrega**; la actividad 8 (manifiestos de Kubernetes) se eliminó. Pueden hacerlo por su cuenta; «[Seguir en casa](#seguir-en-casa-práctica-opcional)» queda como práctica opcional.
 - **Sin IA.** Este laboratorio se hace a mano: sin asistentes de IA, ni para escribir los manifiestos ni para leer los errores. La idea es que cada uno sepa qué hace cada línea antes de pedirle manifiestos a una IA (eso se revisa en el bloque de clase con `--dry-run=server` y un *linter*).
 
 ## Palabras que se usan aquí
@@ -161,8 +161,8 @@ Banco de pruebas: Intel Core i9-12900H, 64 GB de RAM, Windows 11, Docker Desktop
 | [`plantillas/service.yaml`](plantillas/service.yaml) | Service `ClusterIP` con `TODO`: nombre, selector y puerto destino. |
 | [`plantillas/configmap.yaml`](plantillas/configmap.yaml) | ConfigMap con `TODO`: la configuración no secreta. |
 | [`plantillas/secret.yaml`](plantillas/secret.yaml) | Secret con `TODO`: valores secretos (en el laboratorio, falsos). |
-| [`plantillas/gateway.yaml`](plantillas/gateway.yaml) | Gateway `lab` listo para aplicar, sin `TODO` (para la actividad 8, en casa). |
-| [`plantillas/httproute.yaml`](plantillas/httproute.yaml) | HTTPRoute con `TODO`: nombre, Gateway (`parentRefs`) y Service (`backendRefs`) (para la actividad 8, en casa). |
+| [`plantillas/gateway.yaml`](plantillas/gateway.yaml) | Gateway `lab` listo para aplicar, sin `TODO` (para la práctica opcional en casa). |
+| [`plantillas/httproute.yaml`](plantillas/httproute.yaml) | HTTPRoute con `TODO`: nombre, Gateway (`parentRefs`) y Service (`backendRefs`) (para la práctica opcional en casa). |
 | [`ejemplo/`](ejemplo/) | API mínima en Node 24 sin dependencias (`GET /` y `GET /salud`, puerto 3000) y su `Dockerfile`. Sirve para probar el clúster o para hacer el laboratorio si su servicio no arranca solo. Lee `MENSAJE` del ConfigMap y la clave de `API_KEY` o del archivo `API_KEY_FILE`. |
 
 Las plantillas **no aplican tal como están**: la mayoría de los `TODO_...` son valores que Kubernetes rechaza (nombres, puertos, cantidades de CPU y memoria), y `kubectl apply --dry-run=server` les dice cuál falta (por ejemplo, `metadata.name: Invalid value: "TODO_NOMBRE_SERVICIO-config"`). **No todos:** el servidor acepta como válidos la imagen (`TODO_IMAGEN:TODO_ETIQUETA`), la ruta de salud (`/TODO_RUTA_SALUD`), las etiquetas y las claves y valores del ConfigMap y del Secret. Un `TODO_` que se les cuele ahí pasa el `dry-run` y falla después (ver el paso 2).
@@ -171,7 +171,7 @@ Las plantillas **no aplican tal como están**: la mayoría de los `TODO_...` son
 
 ## En clase (35 minutos)
 
-Copien las cuatro plantillas del servicio (`deployment`, `service`, `configmap` y `secret`; sin `kind.yaml`, `gateway.yaml` ni `httproute.yaml`, que son para la actividad 8 en casa) a una carpeta `k8s/` en el repositorio del grupo y trabajen ahí. Lean cada comentario `TODO` antes de completarlo.
+Copien las cuatro plantillas del servicio (`deployment`, `service`, `configmap` y `secret`; sin `kind.yaml`, `gateway.yaml` ni `httproute.yaml`, que son para la práctica opcional en casa) a una carpeta `k8s/` en el repositorio del grupo y trabajen ahí. Lean cada comentario `TODO` antes de completarlo.
 
 ### Paso 1: completar los manifiestos (≈ 15 min)
 
@@ -238,17 +238,17 @@ Arréglenla, vuelvan a aplicar y comprueben otra vez el criterio de éxito: pod 
 
 ---
 
-## Seguir en casa hacia la actividad 8
+## Seguir en casa (práctica opcional)
 
 Práctica opcional, sin entrega (la actividad 8 se eliminó el 9 nov): la carpeta **`k8s/`** con los manifiestos de su servicio.
 
-**Qué se entrega:**
+**Qué conviene tener al terminar** (sirve para revisarse ustedes mismos; no se entrega):
 
 - Los manifiestos en `k8s/`: **Deployment** (con *probes* y `requests/limits`), **Service**, **ConfigMap** y **HTTPRoute**, más el **Secret** solo con valores falsos (los reales se crean por comando, ver el paso 3).
 - La **HTTPRoute** (la escriben ustedes) apunta a **su** Service a través del Gateway `lab` (Gateway API). El script del docente `demo-k8s/scripts/instalar-gateway` instala el controlador (Envoy Gateway) y deja la GatewayClass `eg`; el Gateway `lab` lo crean aplicando [`plantillas/gateway.yaml`](plantillas/gateway.yaml) tal como está. Ni el controlador ni el Gateway hace falta entenderlos.
-- La salida limpia de `kubectl apply --dry-run=server -f k8s/`.
-- La salida de **kube-linter** sobre `k8s/`, con cada hallazgo **corregido o justificado** por escrito (por ejemplo, en un comentario del manifiesto o en `k8s/README.md`).
-- La evidencia del laboratorio: pods `Ready`, un `200` y una *probe* rota a propósito y arreglada.
+- `kubectl apply --dry-run=server -f k8s/` sin errores.
+- **kube-linter** sobre `k8s/`, con cada hallazgo **corregido o justificado** por escrito (por ejemplo, en un comentario del manifiesto o en `k8s/README.md`).
+- Lo del laboratorio comprobado: pods `Ready`, un `200` y una *probe* rota a propósito y arreglada.
 
 Desde lo que dejaron en clase:
 
@@ -293,7 +293,7 @@ Desde lo que dejaron en clase:
 
    Corrijan cada hallazgo o, si deciden no corregirlo, justifíquenlo por escrito (qué avisa y por qué lo dejan así).
 6. Dejen en el README del repositorio (o en `k8s/README.md`) los comandos, en orden, para levantar su servicio en kind desde cero: crear el clúster, construir, `kind load`, `node --no-warnings m8/demo-k8s/scripts/instalar-gateway.ts`, `kubectl apply -f k8s/gateway.yaml`, `kubectl apply -f k8s/`, `port-forward`.
-7. Antes de entregar, desde un clúster recién creado: `kubectl apply --dry-run=server -f k8s/` sin errores, `kube-linter lint --include no-readiness-probe,no-liveness-probe k8s/` con los hallazgos corregidos o justificados, y los tres puntos del criterio de éxito.
+7. Para cerrar, desde un clúster recién creado: `kubectl apply --dry-run=server -f k8s/` sin errores, `kube-linter lint --include no-readiness-probe,no-liveness-probe k8s/` con los hallazgos corregidos o justificados, y los tres puntos del criterio de éxito.
 
 ---
 
@@ -321,7 +321,7 @@ Desde lo que dejaron en clase:
 
 ## Bajar todo
 
-Cuando terminen la actividad 8:
+Cuando terminen (el laboratorio o la práctica opcional en casa):
 
 ```
 kind delete cluster --name lab-s11
