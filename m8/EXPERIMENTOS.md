@@ -273,7 +273,7 @@ De [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md) (24 de octubre de 2026):
 ### Para qué les sirve
 
 - **Actividad 4 (`compose.yaml`):** `despues/compose.yaml` es el modelo de healthcheck, `depends_on` con condición y migraciones como servicio.
-- **Laboratorio de la S08:** [`laboratorio-s08/`](laboratorio-s08/) (auditar/adelgazar la imagen o Podman; entregable `docs/laboratorios/imagen-o-podman.md`, fecha sugerida: domingo 1 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59). La demo es material de apoyo para comparar, no para copiar.
+- **Laboratorio de la S08:** [`laboratorio-s08/`](laboratorio-s08/) (auditar/adelgazar la imagen o Podman; entregable `docs/laboratorios/imagen-o-podman.md`, fecha sugerida: domingo 1 de noviembre, 23:59; se reciben hasta el lun 16 nov, 23:59). La demo es material de apoyo para comparar, no para copiar.
 
 ### Advertencias
 
@@ -296,7 +296,7 @@ De [`DIFERENCIAS.md`](demo-docker/DIFERENCIAS.md) (24 de octubre de 2026):
 
 Carpeta: [`demo-resiliencia/`](demo-resiliencia/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-resiliencia/DIFERENCIAS.md)
 
-**Referencia para el experimento E3 (resiliencia); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
+**Referencia para el experimento E3 (resiliencia); fecha sugerida de entrega: viernes 13 de noviembre, 23:59; se reciben hasta el lun 16 nov, 23:59.**
 
 ### Qué pregunta responde
 
@@ -336,7 +336,7 @@ Medianas de 3 corridas, de [`ESCENARIOS.md`](demo-resiliencia/results/ESCENARIOS
 
 Carpeta: [`demo-mensajeria/`](demo-mensajeria/) · tabla de problemas y cifras: [`DIFERENCIAS.md`](demo-mensajeria/DIFERENCIAS.md)
 
-**Referencia para el experimento E4 (mensajería, incluye un LLM local con Docker Model Runner); fecha sugerida de entrega: miércoles 11 de noviembre, 23:59; se reciben hasta el vie 13 nov, 23:59.**
+**Referencia para el experimento E4 (mensajería, incluye un LLM local con Docker Model Runner); fecha sugerida de entrega: viernes 13 de noviembre, 23:59; se reciben hasta el lun 16 nov, 23:59.**
 
 ### Qué pregunta responde
 
